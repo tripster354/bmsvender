@@ -1,0 +1,33 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/index.js",
+      "sha1": "40c4908f1734022d633f67e40a9341bc7e799a01"
+    },
+    {
+      "path": "src/assets/fonts/Nexa-Bold.otf",
+      "sha1": "4a3690f5df4939b8637e33ba2a8d47c2d10cacd9"
+    },
+    {
+      "path": "src/assets/fonts/Nexa-Book.ttf",
+      "sha1": "4e1cef1ae4d5a4838db634de9230f3997f76645e"
+    },
+    {
+      "path": "src/assets/fonts/Nexa-Light.otf",
+      "sha1": "91f32cebbba87a282036b60559599c56f58ac300"
+    },
+    {
+      "path": "src/assets/fonts/NexaBlack.otf",
+      "sha1": "0aa9d6bc6e6af3e696ef57f0cc1699eb0d2744cf"
+    },
+    {
+      "path": "src/assets/fonts/NexaHeavy.otf",
+      "sha1": "8f0092b1180ed5ad6721f53afd814a2e4eb8a2b9"
+    },
+    {
+      "path": "src/assets/fonts/NexaThin.otf",
+      "sha1": "6abb1a9f94d8ef52175e57c200fcc2a2fda06983"
+    }
+  ]
+}
