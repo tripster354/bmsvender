@@ -20,7 +20,8 @@ LogBox.ignoreLogs([
 
 const App = () => {
   return (
-    <SafeAreaView style={{flex: 1}}>
+    // <SafeAreaView style={{flex: 1}}>
+    <>
       <StatusBar
         translucent
         backgroundColor={'transparent'}
@@ -34,7 +35,8 @@ const App = () => {
           {/* </NavigationContainer> */}
         </PersistGate>
       </Provider>
-    </SafeAreaView>
+    {/* // </SafeAreaView> */}
+    </>
   );
 };
 

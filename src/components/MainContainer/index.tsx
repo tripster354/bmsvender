@@ -11,7 +11,7 @@ import {
   NativeScrollEvent,
 } from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
-import Loader from '../loader';
+import Loader from '../Loader';
 import Colors from '../../utils/theme/colors';
 
 type MainContainerProps = {

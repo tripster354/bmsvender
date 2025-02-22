@@ -4,7 +4,7 @@ import {View} from 'react-native';
 import styles from './styles';
 import {resizeUI} from '../../../Helper/Constants';
 
-const Loader = ({absolute, loaderTop}: any) => {
+export const Loader = ({absolute, loaderTop}: any) => {
   //  = absolute ? styles.absLoadingContainer : styles.loadingContainer
   let style;
   if (absolute) {
@@ -29,6 +29,7 @@ const Loader = ({absolute, loaderTop}: any) => {
     </View>
   );
 };
+
 
 const LoaderHOC =
   (WrapperComponent: any) =>

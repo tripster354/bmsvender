@@ -65,7 +65,7 @@ const CommonHeader = (props:ICommonHeader) => {
   }
 
   return (
-    <View style={[styles.headerContainer,{marginTop:STATUSBAR_HEIGHT + 10}]}>
+    <View style={[styles.headerContainer,{}]}>
       {CommonBackButton()}
       <View style={styles.HeaderTextViewStyle}>
       <Text style={styles.titleTextStyle}>{props.title}</Text>
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         alignItems:"center",
         justifyContent:'space-between',
+        paddingHorizontal:dW(24)
     },
     SubTitleTextStyle:{
       fontFamily:fonts.NexaBold,
