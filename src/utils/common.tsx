@@ -4,7 +4,7 @@ import {store} from '../Redux/store';
 
 // const {Store: store} = Store();
 
-const BASE_URL: string = 'https://bookmyskills.co.in/';
+const BASE_URL: string = 'https://honeydew-magpie-887435.hostingersite.com/api/';
 const Youtube_API_Key: string = 'AIzaSyALAhIiEWn2ndctXqQeB-1gAqfHa9yHF70';
 
 const $http = axios.create({
@@ -15,7 +15,7 @@ const $http = axios.create({
     //   api_key: 2581,
     Authorization: store.getState().AuthReducer.access_token
       ? `Bearer ${store.getState().AuthReducer.access_token}`
-      : 'Bearer jOHTakpopjg3nmsNSMeRpu3qciBr9YPZTRBwnIhHV3yrsL4f6HpQjowLJ0ixpEN5',
+      : 'Bearer bANNjeQhv8573c4zP4jDaLHtDSkM4SZCTOiyVJEv0bNr4RdWpP5rG64wM0vPxVihasdasd',
   },
 });
 
@@ -23,7 +23,7 @@ $http.interceptors.request.use(function async(config) {
   // console.log('token', store.getState().AuthReducer.access_token);
   config.headers.Authorization = store.getState().AuthReducer.access_token
     ? `Bearer ${store.getState().AuthReducer.access_token}`
-    : 'Bearer jOHTakpopjg3nmsNSMeRpu3qciBr9YPZTRBwnIhHV3yrsL4f6HpQjowLJ0ixpEN5';
+    : 'Bearer bANNjeQhv8573c4zP4jDaLHtDSkM4SZCTOiyVJEv0bNr4RdWpP5rG64wM0vPxVihasdasd';
   return config;
 });
 
@@ -34,14 +34,14 @@ const $https = axios.create({
     'Content-Type': 'application/json',
     //   api_key: 2581,
     Authorization:
-      'Bearer jOHTakpopjg3nmsNSMeRpu3qciBr9YPZTRBwnIhHV3yrsL4f6HpQjowLJ0ixpEN5',
+      'Bearer bANNjeQhv8573c4zP4jDaLHtDSkM4SZCTOiyVJEv0bNr4RdWpP5rG64wM0vPxVihasdasd',
   },
 });
 
 $https.interceptors.request.use(function async(config) {
   // console.log('token', store.getState().AuthReducer.access_token);
   config.headers.Authorization =
-    'Bearer jOHTakpopjg3nmsNSMeRpu3qciBr9YPZTRBwnIhHV3yrsL4f6HpQjowLJ0ixpEN5';
+    'Bearer bANNjeQhv8573c4zP4jDaLHtDSkM4SZCTOiyVJEv0bNr4RdWpP5rG64wM0vPxVihasdasd';
   return config;
 });
 
@@ -54,7 +54,7 @@ const $httpFormData = axios.create({
     userType: 4,
     authorization: store.getState().AuthReducer.access_token
       ? `Bearer ${store.getState().AuthReducer.access_token}`
-      : 'Bearer jOHTakpopjg3nmsNSMeRpu3qciBr9YPZTRBwnIhHV3yrsL4f6HpQjowLJ0ixpEN5',
+      : 'Bearer bANNjeQhv8573c4zP4jDaLHtDSkM4SZCTOiyVJEv0bNr4RdWpP5rG64wM0vPxVihasdasd',
   },
 });
 
@@ -62,7 +62,7 @@ $httpFormData.interceptors.request.use(function (config) {
   console.log('token', store.getState().AuthReducer.access_token);
   config.headers.authorization = store.getState().AuthReducer.access_token
     ? `Bearer ${store.getState().AuthReducer.access_token}`
-    : 'Bearer jOHTakpopjg3nmsNSMeRpu3qciBr9YPZTRBwnIhHV3yrsL4f6HpQjowLJ0ixpEN5';
+    : 'Bearer bANNjeQhv8573c4zP4jDaLHtDSkM4SZCTOiyVJEv0bNr4RdWpP5rG64wM0vPxVihasdasd';
   return config;
 });
 
@@ -73,14 +73,14 @@ const $httpFormDatafixed = axios.create({
     'Content-Type': 'multipart/form-data;',
     //   api_key: 2581,
     authorization:
-      'Bearer jOHTakpopjg3nmsNSMeRpu3qciBr9YPZTRBwnIhHV3yrsL4f6HpQjowLJ0ixpEN5',
+      'Bearer bANNjeQhv8573c4zP4jDaLHtDSkM4SZCTOiyVJEv0bNr4RdWpP5rG64wM0vPxVihasdasd',
   },
 });
 
 $httpFormDatafixed.interceptors.request.use(function (config) {
   // console.log('token', store.getState().AuthReducer.access_token);
   config.headers.authorization =
-    'Bearer jOHTakpopjg3nmsNSMeRpu3qciBr9YPZTRBwnIhHV3yrsL4f6HpQjowLJ0ixpEN5';
+    'Bearer bANNjeQhv8573c4zP4jDaLHtDSkM4SZCTOiyVJEv0bNr4RdWpP5rG64wM0vPxVihasdasd';
   return config;
 });
 

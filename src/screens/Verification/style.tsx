@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
         fontSize:dW(31),
         color:Colors.lightBlue,
         fontFamily:fonts.NexaBook,
-        lineHeight:dH(44)
+        // lineHeight:dH(44)
     },
     OtpViewStyle:{
         flexDirection: 'row',

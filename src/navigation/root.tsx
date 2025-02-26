@@ -54,6 +54,7 @@ const Root = () => {
           <Stack.Screen name={'CreateAccount'} component={CreateAccount} />
           <Stack.Screen name={'Verification'} component={Verification} />
           <Stack.Screen name={'SuccessScreen'} component={SuccessScreen} />
+          <Stack.Screen name={'SideMenu'} component={SideMenu}/>
         </Stack.Navigator>
       )}
     </NavigationContainer>

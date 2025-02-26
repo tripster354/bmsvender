@@ -15,7 +15,7 @@ const SuccessScreen = () => {
     const navigation = useNavigation()
     useEffect(()=>{
         setTimeout(() => {
-            navigation.navigate('DrawerNavigator')
+            navigation.navigate('SideMenu')
         }, 2000);
     },[])
     

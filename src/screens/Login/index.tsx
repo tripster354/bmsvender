@@ -17,7 +17,7 @@ import {useNavigation} from '@react-navigation/native';
 import * as Yup from 'yup';
 import {useFormik} from 'formik';
 import {useAppDispatch, useAppSelector} from '../../Redux/reducers/hook';
-import {onHandleLoginVerify} from '../../Redux/actions/AuthAction';
+import {onHandleLogin, onHandleLoginVerify} from '../../Redux/actions/AuthAction';
 import MainContainer from '../../components/MainContainer';
 
 const Login = () => {
@@ -29,7 +29,7 @@ const Login = () => {
   const formik = useFormik({
     initialValues: {
       mobile: '',
-      password: '',
+      // password: '',
     },
     validationSchema: Yup.object({
       mobile: Yup.string()
@@ -37,7 +37,7 @@ const Login = () => {
         .matches(/^[0-9]+$/, 'Mobile number must include only digits')
         .min(10, 'Mobile number must be exactly 10 digits')
         .max(10, 'Mobile number must be exactly 10 digits'),
-      password: Yup.string().required('Password number is required'),
+      // password: Yup.string().required('Password number is required'),
     }),
     onSubmit: values => {
       submitPress(values);
@@ -56,10 +56,20 @@ const Login = () => {
 
   const submitPress = async (values: any) => {
     const formdata = new FormData();
-    formdata.append('LoginInput', values.mobile);
-    formdata.append('Password', values.password);
-
-    dispatch(onHandleLoginVerify(formdata));
+    formdata.append('phone_number', values.mobile);
+    formdata.append('country_code', 91);
+    try {
+      const loginResponse = await dispatch(onHandleLogin(formdata));
+      console.log('loginResponse',loginResponse)
+      if(loginResponse.status){
+        navigation.navigate('Verification',{
+          userData: values.mobile 
+        })
+      }
+    } catch (error) {
+      console.log('error',error)
+    }
+    
   };
 
   const onNextScreen = () => {
@@ -71,14 +81,14 @@ const Login = () => {
 
   return (
     <MainContainer absoluteLoading={isLoading}>
-      <CommonHeader
+      {/* <CommonHeader
         leftIcon={null}
         title={''}
         RigthIcon={null}
         SubTitle={''}
         rigthType={''}
         RigthIconProps={''}
-      />
+      /> */}
       <View style={styles.container}>
         <ScrollView>
           <View style={styles.MainView}>
@@ -125,7 +135,7 @@ const Login = () => {
           <View style={styles.MainView}>
             <View style={[styles.CommonTextinputStyle, {marginTop: dH(40)}]}>
               <CommonTextinput
-                InputIcon={InputIcon.SecureIcon}
+                InputIcon={InputIcon.UserIcon}
                 text={values.mobile}
                 secure={false}
                 onChange={handleChange('mobile')}
@@ -138,7 +148,7 @@ const Login = () => {
                 error={errors.mobile}
               />
             </View>
-            <View style={[styles.CommonTextinputStyle, {marginTop: dH(40)}]}>
+            {/* <View style={[styles.CommonTextinputStyle, {marginTop: dH(40)}]}>
               <CommonTextinput
                 InputIcon={InputIcon.SecureIcon}
                 text={values.password}
@@ -154,7 +164,7 @@ const Login = () => {
               <TouchableOpacity onPress={onSignUpPress}>
                 <Text style={styles.ForgetTextStyle}>Sign Up</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
             <View style={styles.ContinueViewStyle}>
               <GradientButton
                 text={'Continue'}
