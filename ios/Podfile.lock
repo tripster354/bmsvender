@@ -1262,6 +1262,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-compressor (1.10.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-get-random-values (1.11.0):
     - React-Core
   - react-native-image-picker (7.1.2):
@@ -1769,6 +1790,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-compressor (from `../node_modules/react-native-compressor`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
@@ -1896,6 +1918,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-compressor:
+    :path: "../node_modules/react-native-compressor"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-image-picker:
@@ -2024,6 +2048,7 @@ SPEC CHECKSUMS:
   React-logger: 7e56c9eceafd7f45e98c16cb42ff3c9966c67119
   React-Mapbuffer: e68dd904f0f3a84dd35989288ed3bcf5e37f9737
   React-microtasksnativemodule: ca8806e64625be04b8f3d9f31f66508d02c42555
+  react-native-compressor: 14e62ac1dce2aad1d97bcd279b60414fe51009f9
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
   react-native-image-picker: bbb75c48aa8514be4659cafd6df65932556bee13
   react-native-pager-view: 8bd7d72d1c260ef565952ac617ab6e492c457894
@@ -2062,7 +2087,7 @@ SPEC CHECKSUMS:
   RNFS: 89de7d7f4c0f6bafa05343c578f61118c8282ed8
   RNGestureHandler: 5b24d10761754ad271b714e536c457fd89b17c54
   RNImageCropPicker: 16af7b83cc65b4ce992454bfb92a4af17d59ec42
-  RNPermissions: 791cd8c48ebf5fdb9686a4d1ad2a01936a2b2756
+  RNPermissions: 87db0f241afbb99eabe0f292dabdb34ea9b6b043
   RNReanimated: 6398ee150e1ebeda517fdd1e1b5525833a0c0ddc
   RNScreens: 28fbd73104cc9719371da9d9aaa3c70d876a8c6b
   RNSnackbar: f5ad232be3bcab6d5ef7e3b02cdaae621c944b75

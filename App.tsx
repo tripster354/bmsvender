@@ -8,11 +8,9 @@ import {
 } from 'react-native';
 import React from 'react';
 import Root from './src/navigation/root';
-import {NavigationContainer} from '@react-navigation/native';
-import DrawerNavigator from './src/navigation/DrawerNavigator';
 import {Provider} from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
-import {persistor, store} from './src/Redux/store';
+import { persistor, store } from './src/store/configureStore';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',

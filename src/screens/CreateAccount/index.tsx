@@ -2,59 +2,86 @@ import {
   Alert,
   Image,
   ImageBackground,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './styles';
 import CommonHeader from '../../components/CommonHeader';
 import CreateIconImage from '../../assets/images/CreateImageIcon';
-import {dH, dW} from '../../utils/dynamicHeigthWidth';
+import { dH, dW } from '../../utils/dynamicHeigthWidth';
 import TopTabNavigator from '../../navigation/TopTabNavigator';
 import CommonTextinput from '../../components/CommonTextinput';
 import InputIcon from '../../assets/images/InputIcon';
 import GradientButton from '../../constants/GradiantButton';
 import Colors from '../../utils/theme/colors';
 import * as Yup from 'yup';
-import {useFormik} from 'formik';
+import { useFormik } from 'formik';
 import CustomDropDown from '../../components/CustomDropDown';
 import CustomVideoInput from '../../components/CustomVideoInput';
-import {useAppDispatch, useAppSelector} from '../../Redux/reducers/hook';
-import {onHandleRegister} from '../../Redux/actions/AuthAction';
-import {useNavigation} from '@react-navigation/native';
-import {all} from 'axios';
-import {AppHelper} from '../../constants';
-import {isEmpty, selectVideoFromGallery} from '../../constants/helper';
+import { useAppDispatch, useAppSelector } from '../../Redux/reducers/hook';
+import { onHandleRegister } from '../../Redux/actions/AuthAction';
+import { useNavigation } from '@react-navigation/native';
+import { all } from 'axios';
+import { AppHelper } from '../../constants';
+import { isEmpty, selectVideoFromGallery } from '../../constants/helper';
 import fonts from '../../assets/fonts';
-import {ActivityInterestAction} from '../../Redux/actions/CreateAction';
-import MainContainer from '../../components/MainContainer';
-import {resizeUI} from '../../../Helper/Constants';
+import { ActivityInterestAction } from '../../Redux/actions/CreateAction';
+import { useSelector } from 'react-redux';
+import { handleLoader } from '../../store/actions/SessionActions';
+import APICall from '../../utils/common';
+import { endPoint } from '../../utils/endPoint';
+import { showToast } from '../../utils/commonFunction';
+import CustomLoader from '../../components/CustomLoader';
+
 
 const CreateAccount = () => {
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
-  const ActivityData = [
-    {id: 1, title: 'Music'},
-    {id: 2, title: 'Sports'},
-    {id: 3, title: 'Science'},
-    {id: 4, title: 'Arts'},
-  ];
+  const [isLoading, setIsLoading] = useState(true);
+  // const ActivityData = [
+  //   { id: 1, title: 'Music' },
+  //   { id: 2, title: 'Sports' },
+  //   { id: 3, title: 'Science' },
+  //   { id: 4, title: 'Arts' },
+  // ];
   const DocumentData = [
-    {id: 1, title: 'PAN Card'},
-    {id: 2, title: 'Aadhar Number'},
-    {id: 3, title: 'Voter ID'},
-    {id: 4, title: 'License No.'},
+    { id: 1, title: 'PAN Card' },
+    { id: 2, title: 'Aadhar Number' },
+    { id: 3, title: 'Voter ID' },
+    { id: 4, title: 'License No.' },
   ];
 
-  const {activityinterest} = useAppSelector(state => state.CreateReducer);
-  const {isLoading} = useAppSelector(state => state.GlobalReducer);
-
+  // const {activityinterest} = useAppSelector(state => state.CreateReducer);
+  const ActivityData = useSelector(state => state.SessionReducer.activityinterest);
   useEffect(() => {
-    dispatch(ActivityInterestAction());
+    // dispatch(ActivityInterestAction());
+    // dispatch(handleLoader(false));
+    ActivityApiCall()
   }, []);
+
+  const ActivityApiCall = async() =>{
+    const body = ({})
+    setIsLoading(true)
+    await APICall('get', body, endPoint.getactivity, false)
+    .then((res) => {
+      setIsLoading(false);
+      if (res && typeof res === 'object' && 'data' in res) {
+        if ((res as any).data.status === 200) {
+          console.log('res====>', res.data)
+          dispatch(ActivityInterestAction(res.data))
+          // navigation.navigate('Verification', {
+          //   userData: values.mobile
+          // })
+        }
+      }
+    })
+
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -127,22 +154,57 @@ const CreateAccount = () => {
     console.log('video', video);
     console.log('doc', doc);
 
-    const formdata = new FormData();
-    formdata.append('FullName', values.name);
-    formdata.append('MobileNumber', values.mobile);
-    formdata.append('Email', values.email);
-    formdata.append('InstaLink', values?.instagram);
-    formdata.append('TwitterLink', values.tweeter);
-    formdata.append('LinkedInLink', values.linkedin);
-    formdata.append('WebSite', '');
-    formdata.append('ActivityInterestName', values?.interest?.title);
-    formdata.append('YearsOfExperience', values?.year);
-    formdata.append('UploadDocName', values?.docname?.title);
-    formdata.append('Video', video);
-    formdata.append('ProfileImage', file);
-    formdata.append('uploadDoc', doc);
+    // const formdata = new FormData();
+    // formdata.append('FullName', values.name);
+    // formdata.append('MobileNumber', values.mobile);
+    // formdata.append('Email', values.email);
+    // formdata.append('InstaLink', values?.instagram);
+    // formdata.append('TwitterLink', values.tweeter);
+    // formdata.append('LinkedInLink', values.linkedin);
+    // formdata.append('WebSite', '');
+    // formdata.append('ActivityInterestName', values?.interest?.title);
+    // formdata.append('YearsOfExperience', values?.year);
+    // formdata.append('UploadDocName', values?.docname?.title);
+    // formdata.append('Video', video);
+    // formdata.append('ProfileImage', file);
+    // formdata.append('uploadDoc', doc);
 
-    console.log('formdata', formdata._parts);
+    // console.log('formdata', formdata._parts);
+
+    dispatch(handleLoader(true));
+    const body = ({
+      name: values.name,
+      phone_number: values.mobile,
+      refer_code: '',
+      email: values.email,
+      country_code: 91,
+      years_of_exp: values.year,
+      kyc_name: values?.docname?.title,
+      category_id: 1,
+      linkdin_urllinkdin_url: values.linkedin,
+      insta_url: values?.instagram,
+      tweeter_url: values.tweeter,
+      image: file,
+      kyc_proof_image: doc,
+      intro_video: video
+    })
+    console.log('body', body);
+    // return
+    await APICall('post', body, endPoint.register, true)
+      .then((res) => {
+        console.log('res', res)
+        dispatch(handleLoader(false));
+        showToast((res as any).data.message);
+        if (res && typeof res === 'object' && 'data' in res) {
+          if ((res as any).data.status === 200) {
+            console.log('res', res.data)
+            navigation.navigate('Verification', {
+              userData: values.mobile
+            })
+          }
+        }
+      })
+    return
 
     dispatch(
       onHandleRegister(formdata, res => {
@@ -156,9 +218,10 @@ const CreateAccount = () => {
   const selectImage = () => {
     AppHelper.profilePictureClick('ProfilePost')
       .then((result: string) => {
+        console.log('result',result)
         setFieldValue('profile', result);
       })
-      .catch((error: any) => {});
+      .catch((error: any) => { });
   };
   const selectDoc = () => {
     AppHelper.profilePictureClick('Post')
@@ -166,7 +229,7 @@ const CreateAccount = () => {
         setFieldValue('doc', result?.data || result);
         console.log('doc', result.data);
       })
-      .catch((error: any) => {});
+      .catch((error: any) => { });
   };
   const handleSelectVideo = async () => {
     try {
@@ -186,6 +249,7 @@ const CreateAccount = () => {
   console.log('error', errors);
 
   return (
+    <SafeAreaView style={{flex:1,backgroundColor:'white'}}>
     <View style={styles.container}>
       <CommonHeader
         leftIcon={null}
@@ -195,8 +259,8 @@ const CreateAccount = () => {
         rigthType={''}
         RigthIconProps={''}
       />
-      <MainContainer absoluteLoading={isLoading}>
-        <ScrollView style={{flex: 1}}>
+      <>
+        <ScrollView style={{ flex: 1 }}>
           <View>
             <View style={styles.MainView}>
               <View style={styles.TopViewStyle}>
@@ -219,7 +283,7 @@ const CreateAccount = () => {
                     style={styles.PhoneIconStyle}
                   />
                 </ImageBackground>
-                <TouchableOpacity style={{top: dH(-35)}} onPress={selectImage}>
+                <TouchableOpacity style={{ top: dH(-35) }} onPress={selectImage}>
                   <Image
                     source={CreateIconImage.EditImageIcon}
                     style={styles.EditImageStyle}
@@ -242,7 +306,7 @@ const CreateAccount = () => {
                   <></>
                 )}
               </View>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View
                   style={{
                     width: 4,
@@ -269,7 +333,7 @@ const CreateAccount = () => {
                   />
                 </View>
                 <View
-                  style={[styles.CommonTextinputStyle, {marginTop: dH(40)}]}>
+                  style={[styles.CommonTextinputStyle, { marginTop: dH(40) }]}>
                   <CommonTextinput
                     InputIcon={InputIcon.SecureIcon}
                     text={values.mobile}
@@ -285,7 +349,7 @@ const CreateAccount = () => {
                   />
                 </View>
                 <View
-                  style={[styles.CommonTextinputStyle, {marginTop: dH(45)}]}>
+                  style={[styles.CommonTextinputStyle, { marginTop: dH(45) }]}>
                   <CommonTextinput
                     InputIcon={CreateIconImage.EmailIcon}
                     text={values.email}
@@ -314,7 +378,7 @@ const CreateAccount = () => {
                   />
                 </View>
                 <View
-                  style={[styles.CommonTextinputStyle, {marginTop: dH(45)}]}>
+                  style={[styles.CommonTextinputStyle, { marginTop: dH(45) }]}>
                   <CommonTextinput
                     InputIcon={CreateIconImage.TwiterLinkIcon}
                     text={values.tweeter}
@@ -326,7 +390,7 @@ const CreateAccount = () => {
                   />
                 </View>
                 <View
-                  style={[styles.CommonTextinputStyle, {marginTop: dH(45)}]}>
+                  style={[styles.CommonTextinputStyle, { marginTop: dH(45) }]}>
                   <CommonTextinput
                     InputIcon={CreateIconImage.LinkdinLinkIcon}
                     text={values.linkedin}
@@ -361,7 +425,7 @@ const CreateAccount = () => {
                     LeftIcon={CreateIconImage.ActivityIcon}
                     Placeholder={'Activity Intrerested in'}
                     RigthIcon={CreateIconImage.DownArrow}
-                    data={activityinterest}
+                    data={ActivityData}
                     select={values.interest}
                     onSelect={selectedValue =>
                       setFieldValue('interest', selectedValue)
@@ -385,7 +449,7 @@ const CreateAccount = () => {
                   )}
                 </View>
                 <View
-                  style={[styles.CommonTextinputStyle, {marginTop: dH(74)}]}>
+                  style={[styles.CommonTextinputStyle, { marginTop: dH(74) }]}>
                   <CommonTextinput
                     InputIcon={CreateIconImage.ActivityIcon}
                     text={values.year}
@@ -529,8 +593,10 @@ const CreateAccount = () => {
             {/* <TopTabNavigator /> */}
           </View>
         </ScrollView>
-      </MainContainer>
+        {isLoading && <CustomLoader isLoading={isLoading}/> }
+        </>
     </View>
+    </SafeAreaView>
   );
 };
 

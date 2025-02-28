@@ -10,14 +10,17 @@ import CommonHeader from '../../components/CommonHeader'
 import Colors from '../../utils/theme/colors'
 import { dH, dW } from '../../utils/dynamicHeigthWidth'
 import { CommonIcon } from '../../assets/images/CommonIcon'
+import { getAsyncStorage } from '../../utils/commonFunction'
 
-const SuccessScreen = () => {
+const SuccessScreen = async() => {
     const navigation = useNavigation()
-    useEffect(()=>{
-        setTimeout(() => {
-            navigation.navigate('SideMenu')
-        }, 2000);
-    },[])
+    const Token = await getAsyncStorage('Token')
+    console.log('Token', Token)
+    // useEffect(()=>{
+    //     setTimeout(() => {
+    //         navigation.navigate('SideMenu')
+    //     }, 2000);
+    // },[])
     
 
   return (

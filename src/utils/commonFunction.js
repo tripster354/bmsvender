@@ -1,7 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Alert} from 'react-native';
 import Snackbar from 'react-native-snackbar';
 
-const showAlert = (
+export const showAlert = (
   title,
   message,
   positiveText = 'Ok',
@@ -25,7 +26,7 @@ const showAlert = (
  *
  * @param {string} error
  */
-const showToast = (message, durationMillis = 3000) => {
+export const showToast = (message, durationMillis = 3000) => {
   Snackbar.show({
     text: message,
     // duration: Snackbar.LENGTH_LONG,
@@ -35,7 +36,17 @@ const showToast = (message, durationMillis = 3000) => {
   });
 };
 
-export default {
-  showAlert,
-  showToast,
-};
+export const setAsyncStorage = async (KeyName,data) => {
+  await AsyncStorage.setItem(KeyName, data);
+}
+
+export const getAsyncStorage = async (KeyName) => {
+  const data = await AsyncStorage.getItem(KeyName);;
+  return data !== null ? data : '';
+}
+
+export const removeAsyncStorage = async (KeyName) => {
+  await AsyncStorage.removeItem(KeyName);
+}
+
+

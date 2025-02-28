@@ -78,7 +78,7 @@ export const emptyString = '';
 
 const galleryPermissionGranted = (type: string) => {
   let profileoption = {
-    compressImageQuality: 1,
+    compressImageQuality: 0.6,
     cropping: true,
     cropperCircleOverlay: true,
     hideBottomControls: true,
@@ -96,9 +96,9 @@ const galleryPermissionGranted = (type: string) => {
     showCropGuidelines: true,
     showCropFrame: true,
     mediaType: 'photo',
-    compressImageMaxWidth: 3000, // Increase max width
-    compressImageMaxHeight: 4000, // Increase max height
-    compressImageQuality: 1, // Set compression quality to maximum
+    compressImageMaxWidth: 800, // Increase max width
+    compressImageMaxHeight: 800, // Increase max height
+    compressImageQuality: 0.6, // Set compression quality to maximum
   };
   let coverOption = {
     width: 2000,
@@ -109,14 +109,14 @@ const galleryPermissionGranted = (type: string) => {
     showCropGuidelines: true,
     showCropFrame: true,
     mediaType: 'photo',
-    compressImageMaxWidth: 3000, // Increase max width
-    compressImageMaxHeight: 4000, // Increase max height
-    compressImageQuality: 1, // Set compression quality to maximum
+    compressImageMaxWidth: 800, // Increase max width
+    compressImageMaxHeight: 800, // Increase max height
+    compressImageQuality: 0.6, // Set compression quality to maximum
   };
   let PostOption = {
     width: 400,
     height: 400,
-    compressImageQuality: 1,
+    compressImageQuality: 0.6,
     cropping: true,
     hideBottomControls: true,
     showCropGuidelines: false,
@@ -182,7 +182,7 @@ const galleryPermissionGranted = (type: string) => {
 
 const cameraPermissionGranted = (type: string) => {
   let profileoption = {
-    compressImageQuality: 1,
+    compressImageQuality: 0.7,
     cropping: true,
     cropperCircleOverlay: true,
     hideBottomControls: true,
@@ -200,14 +200,14 @@ const cameraPermissionGranted = (type: string) => {
     showCropGuidelines: true,
     showCropFrame: true,
     mediaType: 'photo',
-    compressImageMaxWidth: 3000, // Increase max width
-    compressImageMaxHeight: 4000, // Increase max height
-    compressImageQuality: 1, // Set compression quality to maximum
+    compressImageMaxWidth: 800, // Increase max width
+    compressImageMaxHeight: 800, // Increase max height
+    compressImageQuality: 0.6, // Set compression quality to maximum
   };
   let PostOption = {
     width: 700,
     height: 800,
-    compressImageQuality: 1,
+    compressImageQuality: 0.7,
     cropping: true,
     hideBottomControls: true,
     showCropGuidelines: false,

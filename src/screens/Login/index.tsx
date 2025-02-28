@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './styles';
 import CommonHeader from '../../components/CommonHeader';
 import CommonTextinput from '../../components/CommonTextinput';
@@ -19,13 +19,22 @@ import {useFormik} from 'formik';
 import {useAppDispatch, useAppSelector} from '../../Redux/reducers/hook';
 import {onHandleLogin, onHandleLoginVerify} from '../../Redux/actions/AuthAction';
 import MainContainer from '../../components/MainContainer';
+import { useSelector } from 'react-redux';
+import APICall from '../../utils/common';
+import { endPoint } from '../../utils/endPoint';
+import { handleLoader } from '../../store/actions/SessionActions';
+import commonFunction from '../../utils/commonFunction';
 
 const Login = () => {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
 
-  const {isLoading} = useAppSelector(state => state.GlobalReducer);
+  const isLoading = useSelector(state => state.SessionReducer.isLoading);
+  useEffect(() => {
+    dispatch(handleLoader(false));
+  },[])
 
+ 
   const formik = useFormik({
     initialValues: {
       mobile: '',
@@ -55,20 +64,36 @@ const Login = () => {
   } = formik;
 
   const submitPress = async (values: any) => {
-    const formdata = new FormData();
-    formdata.append('phone_number', values.mobile);
-    formdata.append('country_code', 91);
-    try {
-      const loginResponse = await dispatch(onHandleLogin(formdata));
-      console.log('loginResponse',loginResponse)
-      if(loginResponse.status){
-        navigation.navigate('Verification',{
-          userData: values.mobile 
-        })
+    dispatch(handleLoader(true));
+    const body = JSON.stringify({
+      phone_number: values.mobile,
+      country_code: 91,
+    })
+    await APICall('post',body , endPoint.login,false).then(
+      (res)=>{
+        dispatch(handleLoader(false));
+        if (res && typeof res === 'object' && 'data' in res) {
+          commonFunction.showToast((res as any).data.message);
+          console.log('res',res.data)
+          if( (res as any).data.status === 200){
+            // navigation.navigate('Verification',{
+            //   userData: values.mobile 
+            // })
+          }
+        }
       }
-    } catch (error) {
-      console.log('error',error)
-    }
+    )
+    // try {
+      // const loginResponse = await dispatch(onHandleLogin(formdata));
+    //   console.log('loginResponse',loginResponse)
+    //   if(loginResponse.status === 200){
+    //     navigation.navigate('Verification',{
+    //       userData: values.mobile 
+    //     })
+    //   }
+    // } catch (error) {
+    //   console.log('error',error)
+    // }
     
   };
 
@@ -148,8 +173,8 @@ const Login = () => {
                 error={errors.mobile}
               />
             </View>
-            {/* <View style={[styles.CommonTextinputStyle, {marginTop: dH(40)}]}>
-              <CommonTextinput
+            <View style={[styles.CommonTextinputStyle, {marginTop: dH(40)}]}>
+              {/* <CommonTextinput
                 InputIcon={InputIcon.SecureIcon}
                 text={values.password}
                 secure={false}
@@ -160,11 +185,11 @@ const Login = () => {
                 onBlur={handleBlur('password')}
                 touched={touched.password}
                 error={errors.password}
-              />
+              /> */}
               <TouchableOpacity onPress={onSignUpPress}>
                 <Text style={styles.ForgetTextStyle}>Sign Up</Text>
               </TouchableOpacity>
-            </View> */}
+            </View>
             <View style={styles.ContinueViewStyle}>
               <GradientButton
                 text={'Continue'}

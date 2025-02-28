@@ -3,7 +3,7 @@ import common from '../../utils/common';
 import commonFunction from '../../utils/commonFunction';
 import endPoint from '../../utils/endPoint';
 import types from './types';
-import GlobalAction from './GlobalAction';
+import GlobalAction from '../../store/actions/GlobalAction';
 import {Alert, NativeModules} from 'react-native';
 import {NotificationHandler} from '../../services/notificationServices';
 import {interestsData} from '../../assets/Data';

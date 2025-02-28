@@ -16,6 +16,7 @@ import AllActivity from '../screens/AllActivity';
 import Setting from '../screens/Setting';
 import AboutUs from '../screens/AboutUs';
 import {useAppSelector} from '../Redux/reducers/hook';
+import { useSelector } from 'react-redux';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,7 +37,7 @@ const SideMenu = () => {
 };
 
 const Root = () => {
-  const {access_token}: any = useAppSelector(state => state.AuthReducer);
+  const access_token  = useSelector(state =>state.SessionReducer.access_token);
 
   console.log('access_token', access_token);
   return (
