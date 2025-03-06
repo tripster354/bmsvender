@@ -38,6 +38,7 @@ const CustomDropDown = (props: ICustomDropDown) => {
   };
 
   const ActivityRender = ({item, index}) => {
+    console.log('item', item);
     return (
       <TouchableOpacity
         style={styles.ListItemStyle}

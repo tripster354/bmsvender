@@ -3,6 +3,7 @@ export const endPoint = {
   register: '/vender/register',
   login: 'vender/login',
   loginverify: '/vender/login-verify',
+  verifyRegister: '/vender/register-verify',
   getactivity: '/dropdown/category-list',
   // home api end points
   getallactivity: 'Activity/activity-get-all',

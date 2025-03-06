@@ -65,7 +65,7 @@ const CommonHeader = (props:ICommonHeader) => {
   }
 
   return (
-    <View style={[styles.headerContainer,{}]}>
+    <View style={[styles.headerContainer,{marginTop:STATUSBAR_HEIGHT }]}>
       {CommonBackButton()}
       <View style={styles.HeaderTextViewStyle}>
       <Text style={styles.titleTextStyle}>{props.title}</Text>

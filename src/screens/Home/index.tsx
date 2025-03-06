@@ -36,9 +36,9 @@ const Home: FC<HomeProps> = ({navigation}) => {
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    dispatch(GetAllActivity({page: 1}));
-  }, []);
+  // useEffect(() => {
+  //   dispatch(GetAllActivity({page: 1}));
+  // }, []);
 
   const OnPress = (item: any) => {
     // console.log('Item==>',item)
@@ -188,6 +188,7 @@ const Home: FC<HomeProps> = ({navigation}) => {
   };
 
   return (
+    
     <View style={styles.container}>
       <CommonHeader
         leftIcon={CommonIcon.BurgerMenu}
@@ -219,7 +220,7 @@ const Home: FC<HomeProps> = ({navigation}) => {
           />
         </View>
 
-        <ActivityComponent />
+        {/* <ActivityComponent /> */}
 
         <Text style={styles.GalleryTextStyle}>Gallery</Text>
         <FlatList

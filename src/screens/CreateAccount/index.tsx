@@ -30,9 +30,8 @@ import { all } from 'axios';
 import { AppHelper } from '../../constants';
 import { isEmpty, selectVideoFromGallery } from '../../constants/helper';
 import fonts from '../../assets/fonts';
-import { ActivityInterestAction } from '../../Redux/actions/CreateAction';
 import { useSelector } from 'react-redux';
-import { handleLoader } from '../../store/actions/SessionActions';
+import { ActivityInterestAction, handleLoader } from '../../store/actions/SessionActions';
 import APICall from '../../utils/common';
 import { endPoint } from '../../utils/endPoint';
 import { showToast } from '../../utils/commonFunction';
@@ -50,33 +49,29 @@ const CreateAccount = () => {
   //   { id: 4, title: 'Arts' },
   // ];
   const DocumentData = [
-    { id: 1, title: 'PAN Card' },
-    { id: 2, title: 'Aadhar Number' },
-    { id: 3, title: 'Voter ID' },
-    { id: 4, title: 'License No.' },
+    { id: 1, name: 'PAN Card' },
+    { id: 2, name: 'Aadhar Number' },
+    { id: 3, name: 'Voter ID' },
+    { id: 4, name: 'License No.' },
   ];
 
   // const {activityinterest} = useAppSelector(state => state.CreateReducer);
-  const ActivityData = useSelector(state => state.SessionReducer.activityinterest);
+  const ActivityData = useSelector(state => state.SessionReducer.activityData);
   useEffect(() => {
     // dispatch(ActivityInterestAction());
     // dispatch(handleLoader(false));
     ActivityApiCall()
   }, []);
-
+  
   const ActivityApiCall = async() =>{
-    const body = ({})
+    const body = ''
     setIsLoading(true)
     await APICall('get', body, endPoint.getactivity, false)
     .then((res) => {
       setIsLoading(false);
       if (res && typeof res === 'object' && 'data' in res) {
         if ((res as any).data.status === 200) {
-          console.log('res====>', res.data)
-          dispatch(ActivityInterestAction(res.data))
-          // navigation.navigate('Verification', {
-          //   userData: values.mobile
-          // })
+          dispatch(ActivityInterestAction(res.data.data))
         }
       }
     })
@@ -150,9 +145,9 @@ const CreateAccount = () => {
       type: values.doc?.mime,
     };
 
-    console.log('file', file);
-    console.log('video', video);
-    console.log('doc', doc);
+    // console.log('file', file);
+    // console.log('video', video);
+    // console.log('doc', doc);
 
     // const formdata = new FormData();
     // formdata.append('FullName', values.name);
@@ -171,7 +166,7 @@ const CreateAccount = () => {
 
     // console.log('formdata', formdata._parts);
 
-    dispatch(handleLoader(true));
+    setIsLoading(true)
     const body = ({
       name: values.name,
       phone_number: values.mobile,
@@ -188,18 +183,19 @@ const CreateAccount = () => {
       kyc_proof_image: doc,
       intro_video: video
     })
-    console.log('body', body);
+    // console.log('body', body);
     // return
     await APICall('post', body, endPoint.register, true)
       .then((res) => {
-        console.log('res', res)
-        dispatch(handleLoader(false));
+        // console.log('res', res)
         showToast((res as any).data.message);
         if (res && typeof res === 'object' && 'data' in res) {
+          setIsLoading(false)
           if ((res as any).data.status === 200) {
-            console.log('res', res.data)
+            // console.log('res', res.data)
             navigation.navigate('Verification', {
-              userData: values.mobile
+              userData: values.mobile,
+              flag: 'register',
             })
           }
         }
@@ -218,7 +214,7 @@ const CreateAccount = () => {
   const selectImage = () => {
     AppHelper.profilePictureClick('ProfilePost')
       .then((result: string) => {
-        console.log('result',result)
+        // console.log('result',result)
         setFieldValue('profile', result);
       })
       .catch((error: any) => { });
@@ -227,7 +223,7 @@ const CreateAccount = () => {
     AppHelper.profilePictureClick('Post')
       .then((result: string) => {
         setFieldValue('doc', result?.data || result);
-        console.log('doc', result.data);
+        // console.log('doc', result.data);
       })
       .catch((error: any) => { });
   };
@@ -235,21 +231,20 @@ const CreateAccount = () => {
     try {
       const selectedVideo = await selectVideoFromGallery();
       if (selectedVideo) {
-        console.log('video', selectedVideo);
+        // console.log('video', selectedVideo);
         setFieldValue('video', selectedVideo);
       } else {
         Alert.alert('No video selected');
       }
     } catch (error) {
-      console.log('Error selecting video: ', error);
+      // console.log('Error selecting video: ', error);
       Alert.alert('Error selecting video');
     }
   };
 
-  console.log('error', errors);
+  // console.log('error', errors);
 
   return (
-    <SafeAreaView style={{flex:1,backgroundColor:'white'}}>
     <View style={styles.container}>
       <CommonHeader
         leftIcon={null}
@@ -430,8 +425,8 @@ const CreateAccount = () => {
                     onSelect={selectedValue =>
                       setFieldValue('interest', selectedValue)
                     }
-                    keyField="activityID" // Custom key for ID
-                    valueField="activityInterestName" // Custom key for Title
+                    keyField="id" // Custom key for ID
+                    valueField="name" // Custom key for Title
                   />
                   {!values.interest && errors.interest ? (
                     <View>
@@ -475,7 +470,7 @@ const CreateAccount = () => {
                       setFieldValue('docname', selectedValue)
                     }
                     keyField="id" // Custom key for ID
-                    valueField="title" // Custom key for Title
+                    valueField="name" // Custom key for Title
                   />
                   {!values.docname && errors.docname ? (
                     <View>
@@ -596,7 +591,6 @@ const CreateAccount = () => {
         {isLoading && <CustomLoader isLoading={isLoading}/> }
         </>
     </View>
-    </SafeAreaView>
   );
 };
 

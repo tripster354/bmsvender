@@ -23,13 +23,15 @@ import { useSelector } from 'react-redux';
 import APICall from '../../utils/common';
 import { endPoint } from '../../utils/endPoint';
 import { handleLoader } from '../../store/actions/SessionActions';
-import commonFunction from '../../utils/commonFunction';
+// import commonFunction from '../../utils/commonFunction';
+import CustomLoader from '../../components/CustomLoader';
+import { showToast } from '../../utils/commonFunction';
 
 const Login = () => {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
-
-  const isLoading = useSelector(state => state.SessionReducer.isLoading);
+  const [isLoading, setIsLoading] = useState(false);
+  // const isLoading = useSelector(state => state.SessionReducer.isLoading);
   useEffect(() => {
     dispatch(handleLoader(false));
   },[])
@@ -64,21 +66,23 @@ const Login = () => {
   } = formik;
 
   const submitPress = async (values: any) => {
-    dispatch(handleLoader(true));
+    setIsLoading(true)
     const body = JSON.stringify({
       phone_number: values.mobile,
       country_code: 91,
     })
     await APICall('post',body , endPoint.login,false).then(
       (res)=>{
-        dispatch(handleLoader(false));
+        
         if (res && typeof res === 'object' && 'data' in res) {
-          commonFunction.showToast((res as any).data.message);
+          setIsLoading(false)
+          showToast((res as any).data.message);
           console.log('res',res.data)
           if( (res as any).data.status === 200){
-            // navigation.navigate('Verification',{
-            //   userData: values.mobile 
-            // })
+            navigation.navigate('Verification',{
+              userData: values.mobile,
+              flag: 'login',
+            })
           }
         }
       }
@@ -105,15 +109,7 @@ const Login = () => {
   };
 
   return (
-    <MainContainer absoluteLoading={isLoading}>
-      {/* <CommonHeader
-        leftIcon={null}
-        title={''}
-        RigthIcon={null}
-        SubTitle={''}
-        rigthType={''}
-        RigthIconProps={''}
-      /> */}
+    <>
       <View style={styles.container}>
         <ScrollView>
           <View style={styles.MainView}>
@@ -200,7 +196,9 @@ const Login = () => {
           </View>
         </ScrollView>
       </View>
-    </MainContainer>
+
+{isLoading && <CustomLoader isLoading={isLoading}/> }
+</>
   );
 };
 

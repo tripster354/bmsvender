@@ -23,11 +23,11 @@ import CommonShortInput from '../../components/CommonShortInput';
 import {OfferData} from './MockData';
 import GradientButton from '../../constants/GradiantButton';
 import {useAppDispatch, useAppSelector} from '../../Redux/reducers/hook';
-import {
-  ActivityInterestAction,
-  CreateActivityAction,
-  SelectedLocationDataGetClearAction,
-} from '../../Redux/actions/CreateAction';
+// import {
+//   ActivityInterestAction,
+//   CreateActivityAction,
+//   SelectedLocationDataGetClearAction,
+// } from '../../Redux/actions/CreateAction';
 import * as Yup from 'yup';
 import {useFormik} from 'formik';
 import {AppHelper} from '../../constants';
@@ -41,18 +41,47 @@ import {differenceInMinutes} from 'date-fns';
 import fonts from '../../assets/fonts';
 import MainContainer from '../../components/MainContainer';
 import moment from 'moment';
+import CustomLoader from '../../components/CustomLoader';
+import APICall from '../../utils/common';
+import { endPoint } from '../../utils/endPoint';
+import { ActivityInterestAction } from '../../store/actions/SessionActions';
+import { useSelector } from 'react-redux';
+import { getAsyncStorage } from '../../utils/commonFunction';
 
 const AddPostBooking = () => {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
+  const [isLoading , setIsLoading] = useState(false);
+  
+  // const {activityinterest} = useAppSelector(state => state.CreateReducer);
+  // const {selectedlocationdata} = useAppSelector(state => state.CreateReducer);
+  // const {isLoading} = useAppSelector(state => state.GlobalReducer);
 
-  const {activityinterest} = useAppSelector(state => state.CreateReducer);
-  const {selectedlocationdata} = useAppSelector(state => state.CreateReducer);
-  const {isLoading} = useAppSelector(state => state.GlobalReducer);
-
-  useEffect(() => {
-    dispatch(ActivityInterestAction());
+  // useEffect(() => {
+  //   dispatch(ActivityInterestAction());
+  // }, []);
+  const ActivityData = useSelector(state => state.SessionReducer.activityData);
+  useEffect(async() => {
+    // dispatch(ActivityInterestAction());
+    // dispatch(handleLoader(false));
+    ActivityApiCall()
+   
   }, []);
+  
+  const ActivityApiCall = async() =>{
+    const body = ''
+    setIsLoading(true)
+    await APICall('get', body, endPoint.getactivity, false)
+    .then((res) => {
+      setIsLoading(false);
+      if (res && typeof res === 'object' && 'data' in res) {
+        if ((res as any).data.status === 200) {
+          dispatch(ActivityInterestAction(res.data.data))
+        }
+      }
+    })
+
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -115,7 +144,7 @@ const AddPostBooking = () => {
     const ET = new Date(values.endTime);
 
     const formatDate = dateString => {
-      return moment(dateString, 'MM/DD/YYYY').format('DD/MM/YYYY');
+      return moment(dateString, 'MM/DD/YYYY').format('Y/M/D');
     };
 
     const starttime = ST.toLocaleTimeString([], {
@@ -134,29 +163,64 @@ const AddPostBooking = () => {
     console.log('file', file);
     console.log('file', values.cover);
 
-    const formdata = new FormData();
-    formdata.append('BannerAttachment', file);
-    formdata.append('ActivityTitle', `${values.activityname}`);
-    formdata.append('ActivityAbout', `${values.activity}`);
-    formdata.append('Venue', `${values?.venue}`);
-    formdata.append(
-      'StartDateTime',
-      `${formatDate(values?.startDate?.toLocaleDateString())} 08:00`,
-    );
-    formdata.append(
-      'EndDateTime',
-      `${formatDate(values?.endDate?.toLocaleDateString())} 09:00`,
-    );
-    formdata.append('TotalSeats', values?.seat);
-    formdata.append('Price', values?.price);
-    formdata.append('WebinarLink', `${values?.webinarlink}`);
-    formdata.append('StartTimeActual', starttime);
-    formdata.append('EndTimeActual', endtime);
-    formdata.append(
-      'ActivityInterestName',
-      `${values?.interest?.activityInterestName}`,
-    );
+    // const formdata = new FormData();
+    // formdata.append('BannerAttachment', file);
+    // formdata.append('ActivityTitle', `${values.activityname}`);
+    // formdata.append('ActivityAbout', `${values.activity}`);
+    // formdata.append('Venue', `${values?.venue}`);
+    // formdata.append(
+    //   'StartDateTime',
+    //   `${formatDate(values?.startDate?.toLocaleDateString())} 08:00`,
+    // );
+    // formdata.append(
+    //   'EndDateTime',
+    //   `${formatDate(values?.endDate?.toLocaleDateString())} 09:00`,
+    // );
+    // formdata.append('TotalSeats', values?.seat);
+    // formdata.append('Price', values?.price);
+    // formdata.append('WebinarLink', `${values?.webinarlink}`);
+    // formdata.append('StartTimeActual', starttime);
+    // formdata.append('EndTimeActual', endtime);
+    // formdata.append(
+    //   'name',
+    //   `${values?.interest?.name}`,
+    // );
 
+
+    const myHeaders = new Headers();
+myHeaders.append("Authorization", `Bearer ${await getAsyncStorage("Token")}`);
+myHeaders.append("Cookie", "laravel_session=5EPIcg2MZKvVOkZjxaWinZahhFXG7WaMWrhzMguK");
+
+const formdata = new FormData();
+formdata.append("category_id", "1");
+formdata.append("name", `${values.activityname}`);
+formdata.append("description", `${values.activity}`);
+formdata.append("location_name", "Ahmedabad, Gujarat, India");
+formdata.append("latitude", "654565445");
+formdata.append("longitude", "5465454646546545");
+formdata.append("start_date", `${formatDate(values?.startDate?.toLocaleDateString())}`);
+formdata.append("end_date", `${formatDate(values?.endDate?.toLocaleDateString())}`);
+formdata.append("start_time", starttime);
+formdata.append("end_time", endtime);
+formdata.append("total_seat", values?.seat);
+formdata.append("price", `${values.price}`);
+formdata.append("url_link", "https://testbyrahil.com");
+formdata.append("images[]", file);
+
+const requestOptions = {
+  method: "POST",
+  headers: myHeaders,
+  body: formdata,
+  redirect: "follow"
+};
+
+fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activity", requestOptions)
+  .then((response) => response.text())
+  .then((result) => {
+    console.log('Result====>>',result)
+  
+  })
+  .catch((error) => console.error(error));
     // const formdata = new FormData();
     // formdata.append('WebinarLink', 'jdjdjddd');
     // formdata.append('ActivityInterestName', 'drawing');
@@ -172,15 +236,15 @@ const AddPostBooking = () => {
 
     console.log('formdata', formdata._parts);
 
-    dispatch(
-      CreateActivityAction(formdata, res => {
-        if (res?.status) {
-          resetForm();
-          dispatch(SelectedLocationDataGetClearAction());
-          navigation.navigate('FeedStack');
-        }
-      }),
-    );
+    // dispatch(
+    //   CreateActivityAction(formdata, res => {
+    //     if (res?.status) {
+          // resetForm();
+          // dispatch(SelectedLocationDataGetClearAction());
+          // navigation.navigate('FeedStack');
+    //     }
+    //   }),
+    // );
   };
 
   console.log('err', errors);
@@ -248,11 +312,11 @@ const AddPostBooking = () => {
     calculateTotalHours();
   }, [values.startTime, values.endTime]);
 
-  useEffect(() => {
-    if (selectedlocationdata?.locationname !== formik.values.location) {
-      formik.setFieldValue('venue', selectedlocationdata?.locationname);
-    }
-  }, [selectedlocationdata]);
+  // useEffect(() => {
+  //   if (selectedlocationdata?.locationname !== formik.values.location) {
+  //     formik.setFieldValue('venue', selectedlocationdata?.locationname);
+  //   }
+  // }, [selectedlocationdata]);
 
   const selectImage = () => {
     AppHelper.profilePictureClick('Post')
@@ -303,6 +367,7 @@ const AddPostBooking = () => {
   };
 
   return (
+    <>
     <View style={styles.container}>
       <CommonHeader
         leftIcon={null}
@@ -312,20 +377,20 @@ const AddPostBooking = () => {
         rigthType={''}
         RigthIconProps={''}
       />
-      <MainContainer absoluteLoading={isLoading}>
+ 
         <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
           <View style={styles.DropDownViewStyle}>
             <CustomDropDown
               LeftIcon={CreateIconImage.ActivityIcon}
               Placeholder={'Activity Intrerested in'}
               RigthIcon={CreateIconImage.DownArrow}
-              data={activityinterest}
+              data={ActivityData}
               select={values.interest}
               onSelect={selectedValue =>
                 setFieldValue('interest', selectedValue)
               }
-              keyField="activityID" // Custom key for ID
-              valueField="activityInterestName" // Custom key for Title
+              keyField="id" // Custom key for ID
+              valueField="name" // Custom key for Title
             />
             {!values.interest && errors.interest ? (
               <View>
@@ -417,12 +482,12 @@ const AddPostBooking = () => {
               keyBoradTextType={'default'}
               placeholderTextColor={Colors.inActive}
               RigthIcon={CommonIcon.TargetIcon}
-              onFocus={() => {
-                Keyboard.dismiss(),
-                  navigation.navigate('AddLocation', {
-                    name: 'Booking',
-                  });
-              }}
+              // onFocus={() => {
+              //   Keyboard.dismiss(),
+              //     navigation.navigate('AddLocation', {
+              //       name: 'Booking',
+              //     });
+              // }}
               onBlur={handleBlur('venue')}
               touched={touched.venue}
               error={errors.venue}
@@ -582,8 +647,10 @@ const AddPostBooking = () => {
             />
           </View>
         </ScrollView>
-      </MainContainer>
+
     </View>
+    {isLoading && <CustomLoader isLoading={isLoading}/> }
+    </>
   );
 };
 

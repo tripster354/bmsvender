@@ -24,23 +24,28 @@ const APICall = async(
   formData = false,
 ) =>{
   const Token = await AsyncStorage.getItem('Token');
+  console.log("(====>",Token)
   const staticToken = 'bANNjeQhv8573c4zP4jDaLHtDSkM4SZCTOiyVJEv0bNr4RdWpP5rG64wM0vPxVihasdasd';
   const apiMethod = method.toLowerCase();
   const config: any ={
     method: apiMethod,
     timeOut: 1000 * 60
   }
-  config.headers = 
+  // config.headers = 
   config.headers = formData ?
   {
     Accept : 'application/json',
     'Content-Type': 'multipart/form-data',
-    ...(Token ? {Authorization: `Bearer ${Token}`}:{Authorization: `Bearer ${staticToken}`}),
+    "Authorization":  `Bearer ${staticToken}`,
+    // ...(Token ? {Authorization: `Bearer ${Token}`}:{Authorization: `Bearer ${staticToken}`}),
   }:
   { Accept : 'application/json',
     'Content-Type': 'application/json',
+    "Authorization":  `Bearer ${staticToken}`,
+    // ...(Token ? {Authorization: `Bearer ${Token}`}:{Authorization: `Bearer ${staticToken}`}),
     // ...(Token ? {Authorization: `Bearer ${Token}`}:{Authorization: `Bearer ${staticToken}`}),
   }
+  console.log('config===>',config)
   if(url){
     config.url = url;
   }

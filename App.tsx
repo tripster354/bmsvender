@@ -33,8 +33,8 @@ const App = () => {
           {/* </NavigationContainer> */}
         </PersistGate>
       </Provider>
-    {/* // </SafeAreaView> */}
     </>
+    // </SafeAreaView>
   );
 };
 

@@ -12,15 +12,14 @@ import { dH, dW } from '../../utils/dynamicHeigthWidth'
 import { CommonIcon } from '../../assets/images/CommonIcon'
 import { getAsyncStorage } from '../../utils/commonFunction'
 
-const SuccessScreen = async() => {
+const SuccessScreen = () => {
     const navigation = useNavigation()
-    const Token = await getAsyncStorage('Token')
-    console.log('Token', Token)
-    // useEffect(()=>{
-    //     setTimeout(() => {
-    //         navigation.navigate('SideMenu')
-    //     }, 2000);
-    // },[])
+    // const Token = await getAsyncStorage('Token')
+    useEffect(()=>{
+        setTimeout(async() => {
+            navigation.navigate('SideMenu')
+        }, 2000);
+    },[])
     
 
   return (

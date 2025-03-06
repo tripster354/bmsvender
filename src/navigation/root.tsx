@@ -17,8 +17,10 @@ import Setting from '../screens/Setting';
 import AboutUs from '../screens/AboutUs';
 import {useAppSelector} from '../Redux/reducers/hook';
 import { useSelector } from 'react-redux';
+import { getAsyncStorage } from '../utils/commonFunction';
 
 const Stack = createNativeStackNavigator();
+
 
 const SideMenu = () => {
   return (
@@ -37,17 +39,9 @@ const SideMenu = () => {
 };
 
 const Root = () => {
-  const access_token  = useSelector(state =>state.SessionReducer.access_token);
 
-  console.log('access_token', access_token);
   return (
     <NavigationContainer>
-      {access_token ? (
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name={'DrawerNavigator'} component={SideMenu} />
-          <Stack.Screen name={'Notification'} component={Notification} />
-        </Stack.Navigator>
-      ) : (
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name={'Splash'} component={Splash} />
           <Stack.Screen name={'Intro'} component={Intro} />
@@ -57,7 +51,6 @@ const Root = () => {
           <Stack.Screen name={'SuccessScreen'} component={SuccessScreen} />
           <Stack.Screen name={'SideMenu'} component={SideMenu}/>
         </Stack.Navigator>
-      )}
     </NavigationContainer>
   );
 };
