@@ -1,4 +1,4 @@
-import { ACTIVITYINTEREST, IS_LOADING, REGISTER_USER } from "./Types"
+import { ACTIVITYINTEREST, GETALLACTIVITY, IS_LOADING, REGISTER_USER } from "./Types"
 
 
 export const register_user = (data) =>{
@@ -34,4 +34,11 @@ export const handleAbsoluteLoader = (isAbsoluteLoading) => ({
   type: IS_LOADING,
   payload: {isAbsoluteLoading},
 });
+
+export const getActivityData = (data)=>{
+  return{
+    type: GETALLACTIVITY,
+    payload: data
+  }
+}
 

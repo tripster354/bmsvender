@@ -10,7 +10,6 @@ const Splash = () => {
   useEffect(()=>{
     setTimeout(async()=>{
        const access_token = await getAsyncStorage('Token')
-       console.log('access_token',access_token)
         if(access_token){
           navigation.navigate('SideMenu')
         }else{

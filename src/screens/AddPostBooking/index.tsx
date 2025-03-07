@@ -46,29 +46,57 @@ import APICall from '../../utils/common';
 import { endPoint } from '../../utils/endPoint';
 import { ActivityInterestAction } from '../../store/actions/SessionActions';
 import { useSelector } from 'react-redux';
-import { getAsyncStorage } from '../../utils/commonFunction';
+import { getAsyncStorage, showToast } from '../../utils/commonFunction';
+import GetLocation, {
+  Location,
+  LocationErrorCode,
+  isLocationError,
+} from 'react-native-get-location';
 
 const AddPostBooking = () => {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const [isLoading , setIsLoading] = useState(false);
+  const [location, setLocation] = useState(null);
+  const [error, setError] = useState(null);
   
-  // const {activityinterest} = useAppSelector(state => state.CreateReducer);
-  // const {selectedlocationdata} = useAppSelector(state => state.CreateReducer);
-  // const {isLoading} = useAppSelector(state => state.GlobalReducer);
-
-  // useEffect(() => {
-  //   dispatch(ActivityInterestAction());
-  // }, []);
   const ActivityData = useSelector(state => state.SessionReducer.activityData);
-  useEffect(async() => {
-    // dispatch(ActivityInterestAction());
-    // dispatch(handleLoader(false));
+  useEffect(() => {
     ActivityApiCall()
-   
+    LocationGet()
   }, []);
+
+  const LocationGet = async() =>{
+    setLocation(null);
+    setError(null);
+
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 30000,
+      rationale: {
+        title: 'Location permission',
+        message: 'The app needs the permission to request your location.',
+        buttonPositive: 'Ok',
+      },
+    })
+      .then(newLocation => {
+        console.log('newLoction',newLocation)
+        setLocation(newLocation);
+      })
+      .catch(ex => {
+        if (isLocationError(ex)) {
+          const {code, message} = ex;
+          console.warn(code, message);
+          setError(code);
+        } else {
+          console.warn(ex);
+        }
+        setLocation(null);
+      });
+  }
   
   const ActivityApiCall = async() =>{
+    const Token = await getAsyncStorage('Token')
     const body = ''
     setIsLoading(true)
     await APICall('get', body, endPoint.getactivity, false)
@@ -106,10 +134,6 @@ const AddPostBooking = () => {
       cover: Yup.object().required('Cover Image is required'),
       venue: Yup.string().required('Venue is required'),
       seat: Yup.string().required('Total seat is required'),
-      // totalhour: Yup.string().matches(
-      //   /^(0*[1-9]|[1-9][0-9]*):([0-5][0-9])$/,
-      //   'Total hour must be at least 1:00',
-      // ),
       price: Yup.number().required('Price is required'),
       webinarlink: Yup.string().required('Webinarlink is required'),
     }),
@@ -123,7 +147,6 @@ const AddPostBooking = () => {
     errors,
     handleSubmit,
     handleChange,
-    handleBlur,
     setFieldValue,
     touched,
     resetForm,
@@ -144,7 +167,7 @@ const AddPostBooking = () => {
     const ET = new Date(values.endTime);
 
     const formatDate = dateString => {
-      return moment(dateString, 'MM/DD/YYYY').format('Y/M/D');
+      return moment(dateString, 'MM/DD/YYYY').format('YYYY-MM-DD');
     };
 
     const starttime = ST.toLocaleTimeString([], {
@@ -160,44 +183,19 @@ const AddPostBooking = () => {
       hour12: false,
     });
 
-    console.log('file', file);
-    console.log('file', values.cover);
-
-    // const formdata = new FormData();
-    // formdata.append('BannerAttachment', file);
-    // formdata.append('ActivityTitle', `${values.activityname}`);
-    // formdata.append('ActivityAbout', `${values.activity}`);
-    // formdata.append('Venue', `${values?.venue}`);
-    // formdata.append(
-    //   'StartDateTime',
-    //   `${formatDate(values?.startDate?.toLocaleDateString())} 08:00`,
-    // );
-    // formdata.append(
-    //   'EndDateTime',
-    //   `${formatDate(values?.endDate?.toLocaleDateString())} 09:00`,
-    // );
-    // formdata.append('TotalSeats', values?.seat);
-    // formdata.append('Price', values?.price);
-    // formdata.append('WebinarLink', `${values?.webinarlink}`);
-    // formdata.append('StartTimeActual', starttime);
-    // formdata.append('EndTimeActual', endtime);
-    // formdata.append(
-    //   'name',
-    //   `${values?.interest?.name}`,
-    // );
 
 
+    console.log('${formatDate(values?.startDate?.toLocaleDateString())}',formatDate(values?.startDate?.toLocaleDateString()))
     const myHeaders = new Headers();
 myHeaders.append("Authorization", `Bearer ${await getAsyncStorage("Token")}`);
-myHeaders.append("Cookie", "laravel_session=5EPIcg2MZKvVOkZjxaWinZahhFXG7WaMWrhzMguK");
 
 const formdata = new FormData();
 formdata.append("category_id", "1");
 formdata.append("name", `${values.activityname}`);
 formdata.append("description", `${values.activity}`);
-formdata.append("location_name", "Ahmedabad, Gujarat, India");
-formdata.append("latitude", "654565445");
-formdata.append("longitude", "5465454646546545");
+formdata.append("location_name", `${values.venue}`);
+formdata.append("latitude", location?.latitude);
+formdata.append("longitude", location?.longitude);
 formdata.append("start_date", `${formatDate(values?.startDate?.toLocaleDateString())}`);
 formdata.append("end_date", `${formatDate(values?.endDate?.toLocaleDateString())}`);
 formdata.append("start_time", starttime);
@@ -207,6 +205,7 @@ formdata.append("price", `${values.price}`);
 formdata.append("url_link", "https://testbyrahil.com");
 formdata.append("images[]", file);
 
+
 const requestOptions = {
   method: "POST",
   headers: myHeaders,
@@ -214,37 +213,20 @@ const requestOptions = {
   redirect: "follow"
 };
 
+setIsLoading(true)
 fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activity", requestOptions)
-  .then((response) => response.text())
+  .then((response) => response.json())
   .then((result) => {
-    console.log('Result====>>',result)
-  
+    setIsLoading(false)
+    let temp = result
+    if(result.status == 201){
+      console.log('message==>',temp)
+      showToast(temp.message)
+      resetForm();
+      navigation.navigate('FeedStack');
+    }
   })
   .catch((error) => console.error(error));
-    // const formdata = new FormData();
-    // formdata.append('WebinarLink', 'jdjdjddd');
-    // formdata.append('ActivityInterestName', 'drawing');
-    // formdata.append('ActivityTitle', 'Classes ddssssksk dsjj');
-    // formdata.append('Price', '200');
-    // formdata.append('TotalSeats', '20');
-    // formdata.append('Venue', 'Ahmedabad, Gujarat, India');
-    // formdata.append('EndDateTime', '13/12/2024 09:00');
-    // formdata.append('EndTimeActual', '15:00:00');
-    // formdata.append('StartTimeActual', '12:00:00');
-    // formdata.append('StartDateTime', '12/12/2024 08:00');
-    // formdata.append('ActivityAbout', 'Making Tea');
-
-    console.log('formdata', formdata._parts);
-
-    // dispatch(
-    //   CreateActivityAction(formdata, res => {
-    //     if (res?.status) {
-          // resetForm();
-          // dispatch(SelectedLocationDataGetClearAction());
-          // navigation.navigate('FeedStack');
-    //     }
-    //   }),
-    // );
   };
 
   console.log('err', errors);
@@ -293,11 +275,9 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
       const start = values.startTime;
       const end = values.endTime;
 
-      // Calculate difference in minutes
       const diffInMinutes = differenceInMinutes(end, start);
 
       if (diffInMinutes > 0) {
-        // Convert minutes to hours and minutes format
         const hours = Math.floor(diffInMinutes / 60);
         const minutes = diffInMinutes % 60;
         setFieldValue(
@@ -305,18 +285,13 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
           `${hours}:${minutes < 10 ? '0' : ''}${minutes}`,
         );
       } else {
-        setFieldValue('totalhour', '0:00'); // Set default if end time is before start time
+        setFieldValue('totalhour', '0:00'); 
       }
     };
 
     calculateTotalHours();
   }, [values.startTime, values.endTime]);
 
-  // useEffect(() => {
-  //   if (selectedlocationdata?.locationname !== formik.values.location) {
-  //     formik.setFieldValue('venue', selectedlocationdata?.locationname);
-  //   }
-  // }, [selectedlocationdata]);
 
   const selectImage = () => {
     AppHelper.profilePictureClick('Post')
@@ -339,9 +314,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
     );
   };
 
-  const onNextScreen = () => {
-    console.log('Publish');
-  };
 
   const Offerrender = ({item, index}) => {
     return (
@@ -420,7 +392,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
               placeholderText={'Activity Name'}
               keyBoradTextType={'default'}
               placeholderTextColor={Colors.inActive}
-              onBlur={handleBlur('activityname')}
               touched={touched.activityname}
               error={errors.activityname}
             />
@@ -439,7 +410,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
               keyBoradTextType={'default'}
               placeholderTextColor={Colors.inActive}
               multiline={true}
-              onBlur={handleBlur('activity')}
               touched={touched.activity}
               error={errors.activity}
             />
@@ -482,13 +452,15 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
               keyBoradTextType={'default'}
               placeholderTextColor={Colors.inActive}
               RigthIcon={CommonIcon.TargetIcon}
+              onFocus={() =>{
+                LocationGet()
+              }}
               // onFocus={() => {
               //   Keyboard.dismiss(),
               //     navigation.navigate('AddLocation', {
               //       name: 'Booking',
               //     });
               // }}
-              onBlur={handleBlur('venue')}
               touched={touched.venue}
               error={errors.venue}
             />
@@ -542,7 +514,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
               placeholderText={'Total Seat'}
               keyBoradTextType={'number-pad'}
               placeholderTextColor={Colors.inActive}
-              onBlur={handleBlur('seat')}
               touched={touched.seat}
               error={errors.seat}
             />
@@ -560,7 +531,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
               placeholderText={'Total Hours'}
               keyBoradTextType={'number-pad'}
               placeholderTextColor={Colors.inActive}
-              onBlur={handleBlur('totalhour')}
               touched={touched.totalhour}
               error={errors.totalhour}
               editable={false}
@@ -579,7 +549,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
               placeholderText={'Price'}
               keyBoradTextType={'number-pad'}
               placeholderTextColor={Colors.inActive}
-              onBlur={handleBlur('price')}
               touched={touched.price}
               error={errors.price}
             />
@@ -595,7 +564,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
                 marginRight: resizeUI(30),
               }}
               placeholderTextColor={Colors.grey}
-              onBlur={handleBlur('')}
               value={values.webinarlink}
               onChangeText={handleChange('webinarlink')}
               numberOfLines={1}

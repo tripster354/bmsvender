@@ -2,17 +2,18 @@ import {
   FlatList,
   Image,
   ImageBackground,
+  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {FC, useEffect, useState} from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import styles from './style';
 import CommonHeader from '../../components/CommonHeader';
 import images from '../../assets/images';
 import CommonSearch from '../../components/CommonSearch';
-import {CommonIcon} from '../../assets/images/CommonIcon';
+import { CommonIcon } from '../../assets/images/CommonIcon';
 import {
   ActivityData,
   CardDetail,
@@ -20,34 +21,123 @@ import {
   ParticipantData,
   SkillCard,
 } from './MockData';
-import {dH, dW} from '../../utils/dynamicHeigthWidth';
+import { dH, dW } from '../../utils/dynamicHeigthWidth';
 import LinearGradient from 'react-native-linear-gradient';
 import HomeIcon from '../../assets/images/home';
 import CustomLineChart from '../../components/chart/CustomLineChart';
-import {NavigationContainer} from '@react-navigation/native';
-import {useAppDispatch} from '../../Redux/reducers/hook';
-import {GetAllActivity} from '../../Redux/actions/HomeAction';
+import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
+import { useAppDispatch } from '../../Redux/reducers/hook';
+import { GetAllActivity } from '../../Redux/actions/HomeAction';
 import ActivityComponent from './Components/ActivityComponent';
+import { getAsyncStorage } from '../../utils/commonFunction';
+import CustomLoader from '../../components/CustomLoader';
 // import { ActivityData } from './MockData';
 
-interface HomeProps {}
+interface HomeProps { }
 
-const Home: FC<HomeProps> = ({navigation}) => {
+const Home: FC<HomeProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const [search, setSearch] = useState('');
+  const [apiMessage, setApiMessage] = useState('')
+  const [loading, setLoading] = useState(false);
+  const [isLoading , setIsLoading] = useState(false);
+  const [activityData, setActivityData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMoreData, setHasMoreData] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        setIsLoading(true);
+        setActivityData([]); // Reset data before fetching
+        setCurrentPage(1);
+        setHasMoreData(true);
+        await fetchActivities(1);
+        setIsLoading(false);
+      };
+  
+      fetchData();
+    }, [])
+  );
+  
+  const onRefresh = async () => {
+    setRefreshing(true);
+    setHasMoreData(true);
+    setCurrentPage(1);
+    setActivityData([]); // Clear old data
+    await fetchActivities(1);
+    setRefreshing(false);
+  };
+
+
+  const fetchActivities = async (page) => {
+    if (loading || !hasMoreData) return;
+    setLoading(true);
+
+    try {
+      const Token = await getAsyncStorage("Token");
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${Token}`);
+
+      const formdata = new FormData();
+      formdata.append("page", page.toString());
+      formdata.append("item_count", "10");
+      formdata.append("status", "0");
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: formdata,
+        redirect: "follow",
+      };
+
+      const response = await fetch(
+        "https://honeydew-magpie-887435.hostingersite.com/api/vender/list-activity",
+        requestOptions
+      );
+
+      const result = await response.json();
+      console.log('result',result)
+      setLoading(false);
+      if (result?.status === 200) {
+        if (result?.data?.result?.length > 0) {
+          setActivityData((prevData) => [...prevData, ...result.data.result]);
+          setCurrentPage((prevPage) => prevPage + 1);
+        } else {
+          setHasMoreData(false); // No more data available
+        }
+      } else {
+        setActivityData([]); // Clear existing data
+        setApiMessage(result?.message || "No data available.");
+        setHasMoreData(false)
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("API Fetch Error:", error);
+      setApiMessage("Failed to load data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // useEffect(() => {
   //   dispatch(GetAllActivity({page: 1}));
   // }, []);
 
-  const OnPress = (item: any) => {
-    // console.log('Item==>',item)
-    navigation.navigate('WorkShop', {
-      data: item,
-    });
-  };
+  // const OnPress = (item: any) => {
+  //   // console.log('Item==>',item)
+  //   navigation.navigate('WorkShop', {
+  //     data: item,
+  //   });
+  // };
 
-  const renderGalleryItem = ({item, index}) => {
+
+
+
+
+  const renderGalleryItem = ({ item, index }) => {
     return (
       <View>
         <Image
@@ -59,7 +149,7 @@ const Home: FC<HomeProps> = ({navigation}) => {
     );
   };
 
-  const renderCardDetail = ({item, index}) => {
+  const renderCardDetail = ({ item, index }) => {
     return (
       <View style={styles.CardViewStyle}>
         <View style={styles.ProfileHeaderViewStyle}>
@@ -116,17 +206,17 @@ const Home: FC<HomeProps> = ({navigation}) => {
     );
   };
 
-  const SkillRender = ({item, index}) => {
+  const SkillRender = ({ item, index }) => {
     return (
       <View style={styles.SkillCardViewStyle}>
         <ImageBackground
           source={item.Skillimage}
           style={styles.ActivityImageStyle}
-          imageStyle={{borderRadius: dW(30)}}>
+          imageStyle={{ borderRadius: dW(30) }}>
           <LinearGradient
             colors={['#00000000', '#000000']}
-            start={{x: 0.5, y: 0.5}}
-            end={{x: 0.5, y: 1}}
+            start={{ x: 0.5, y: 0.5 }}
+            end={{ x: 0.5, y: 1 }}
             style={styles.LiniarEffectViewStyle}>
             <View style={styles.IconViewStyle}>
               <Image
@@ -165,7 +255,7 @@ const Home: FC<HomeProps> = ({navigation}) => {
     );
   };
 
-  const Participantrender = ({item, index}) => {
+  const Participantrender = ({ item, index }) => {
     return (
       <View style={styles.ParticipantCardStyle}>
         <Text style={styles.nameStyle}>{item.ParticipantName}</Text>
@@ -188,7 +278,7 @@ const Home: FC<HomeProps> = ({navigation}) => {
   };
 
   return (
-    
+    <>
     <View style={styles.container}>
       <CommonHeader
         leftIcon={CommonIcon.BurgerMenu}
@@ -200,7 +290,11 @@ const Home: FC<HomeProps> = ({navigation}) => {
         RigthIconProps={''}
         disabled={false}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.SearchTextinputViewStyle}>
           <CommonSearch
             serachicon={images.Location.search_icon}
@@ -220,11 +314,13 @@ const Home: FC<HomeProps> = ({navigation}) => {
           />
         </View>
 
-        {/* <ActivityComponent /> */}
+        <ActivityComponent activityData={activityData} currentPage={currentPage} fetchActivities={fetchActivities} load={loading} hasMoreData={hasMoreData}
+          apiMessage={apiMessage}
+        />
 
         <Text style={styles.GalleryTextStyle}>Gallery</Text>
         <FlatList
-          style={{marginTop: dH(30)}}
+          style={{ marginTop: dH(30) }}
           horizontal
           data={GalleryData}
           renderItem={renderGalleryItem}
@@ -278,6 +374,8 @@ const Home: FC<HomeProps> = ({navigation}) => {
         />
       </ScrollView>
     </View>
+    {isLoading && <CustomLoader isLoading={isLoading}/>}
+    </>
   );
 };
 

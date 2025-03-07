@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         alignItems:"center",
         justifyContent:'space-between',
-        paddingHorizontal:dW(24)
+        // paddingHorizontal:dW(24)
     },
     SubTitleTextStyle:{
       fontFamily:fonts.NexaBold,

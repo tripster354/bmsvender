@@ -1,4 +1,4 @@
-import { ACTIVITYINTEREST, IS_LOADING, REGISTER_USER } from "../actions/Types";
+import { ACTIVITYINTEREST, GETALLACTIVITY, IS_LOADING, REGISTER_USER } from "../actions/Types";
 
 
 const intialState = {
@@ -8,6 +8,7 @@ const intialState = {
     isAbsoluteLoading: false,
     isFetching: false,
     activityData: [],
+    getActivityData: [],
 }
 
 
@@ -29,6 +30,12 @@ export default (state = intialState, action) => {
             return{
                 ...state,
                 activityData: action.payload
+            }
+        }
+        case GETALLACTIVITY:{
+            return{
+                ...state,
+                getActivityData: action.payload
             }
         }
         default:

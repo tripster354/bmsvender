@@ -53,13 +53,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   StarIconStyle: {
-    height: dH(29),
+    height: dH(28),
     width: dW(28),
   },
   RatingTextStyle: {
     color: Colors.grey,
     fontFamily: fonts.NexaBold,
-    fontSize: dW(32),
+    fontSize: dW(30),
     left: dW(10),
   },
   LiniarEffectViewStyle: {

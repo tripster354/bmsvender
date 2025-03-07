@@ -13,7 +13,6 @@ const getFormData = (object: any) => {
   Object.keys(object).forEach(key => {
     formData.append(key, object[key]);
   });
-  console.log('formData===>',formData)
   return formData;
 }
 
@@ -24,7 +23,6 @@ const APICall = async(
   formData = false,
 ) =>{
   const Token = await AsyncStorage.getItem('Token');
-  console.log("(====>",Token)
   const staticToken = 'bANNjeQhv8573c4zP4jDaLHtDSkM4SZCTOiyVJEv0bNr4RdWpP5rG64wM0vPxVihasdasd';
   const apiMethod = method.toLowerCase();
   const config: any ={
@@ -45,7 +43,6 @@ const APICall = async(
     // ...(Token ? {Authorization: `Bearer ${Token}`}:{Authorization: `Bearer ${staticToken}`}),
     // ...(Token ? {Authorization: `Bearer ${Token}`}:{Authorization: `Bearer ${staticToken}`}),
   }
-  console.log('config===>',config)
   if(url){
     config.url = url;
   }

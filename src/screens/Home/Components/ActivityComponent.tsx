@@ -5,68 +5,39 @@ import {
   Image,
   TouchableOpacity,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import MainContainer from '../../../components/MainContainer';
 import styles from '../style';
 import LinearGradient from 'react-native-linear-gradient';
 import images from '../../../assets/images';
 import {useAppDispatch, useAppSelector} from '../../../Redux/reducers/hook';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {dW} from '../../../utils/dynamicHeigthWidth';
 import {GetAllActivity} from '../../../Redux/actions/HomeAction';
-import {debounce} from 'lodash';
 import Colors from '../../../utils/theme/colors';
+import { useSelector } from 'react-redux';
+import { getAsyncStorage } from '../../../utils/commonFunction';
 
-const ActivityComponent = () => {
+const ActivityComponent = (props) => {
   const dispatch = useAppDispatch();
   const navigation = useNavigation<any>();
-  const {activitydata, APage, AMore} = useAppSelector(
-    state => state.HomeReducer,
-  );
+  const [apiMessage , setApiMessage] = useState('')
 
-  console.log('activitydata', activitydata);
 
   const OnPress = (item: any) => {
-    navigation.navigate('WorkShop', {
-      data: item,
-    });
+    // navigation.navigate('WorkShop', {
+    //   data: item,
+    // });
   };
-
-  const fetchdata = async () => {
-    const obj = {
-      page: 1,
-    };
-
-    await dispatch(GetAllActivity(obj));
-  };
-
-  useEffect(() => {
-    fetchdata();
-  }, []);
-
-  const LordPostsData = async () => {
-    const obj = {
-      page: APage,
-      item_count: 10,
-    };
-    if (AMore) {
-      await dispatch(GetAllActivity(obj));
-    }
-  };
-
-  const debouncedOnEndReached = useCallback(debounce(LordPostsData, 1000), [
-    AMore,
-    APage,
-  ]);
-
   const renderActivity = ({item, index}: any) => {
     return (
       <TouchableOpacity
         style={styles.ActivityCardViewStyle}
         onPress={() => OnPress(item)}>
         <ImageBackground
-          source={item.image}
+          source={{uri:item?.images[0]}}
           style={styles.ActivityImageStyle}
           imageStyle={{borderRadius: dW(30)}}>
           <LinearGradient
@@ -79,41 +50,41 @@ const ActivityComponent = () => {
                 source={images.home.StarIcon}
                 tintColor={'#FECF6A'}
                 style={styles.StarIconStyle}
-                resizeMode={'contain'}
+                // resizeMode={'contain'}
               />
               <Text style={styles.RatingTextStyle}>{item.rating || 4}</Text>
             </View>
           </LinearGradient>
         </ImageBackground>
         <View style={styles.DetailViewStyle}>
-          <Text style={styles.ActivityTextStyle}>{item?.ActivityTitle}</Text>
+          <Text style={styles.ActivityTextStyle}>{item?.name}</Text>
           <View style={styles.LocationViewStyle}>
             <Image
               source={images.profile.LocationMark}
               style={styles.LocationIconStyle}
               resizeMode={'contain'}
             />
-            <Text style={styles.LocationTextStyle}>{item.Venue}</Text>
+            <Text style={styles.LocationTextStyle}>{item.location_name}</Text>
           </View>
-          <Text style={styles.PriceStyle}>Price: {item.Price}</Text>
+          <Text style={styles.PriceStyle}>Price: {item.price}</Text>
 
           <Text style={[styles.TimeDateTextStyle, {color: Colors.black}]}>
             Date:{' '}
             <Text style={styles.TimeDateTextStyle}>
-              {item.StartDateTime} To {item?.EndDateTime}
+              {item.start_date} To {item?.end_date}
             </Text>
           </Text>
           <Text style={[styles.TimeDateTextStyle, {color: Colors.black}]}>
             Time:{' '}
             <Text style={styles.TimeStyle}>
-              {item.StartTimeActual} To {item?.EndTimeActual}
+              {item.start_time} To {item?.end_time}
             </Text>
           </Text>
           <View>
             <Text style={styles.DiscTextStyle} numberOfLines={2}>
-              {item.ActivityAbout}
+              {item.description}
             </Text>
-            {/* <Text style={styles.ReadMoreTextStyle}>Read More</Text> */}
+            <Text style={styles.ReadMoreTextStyle}>Read More</Text>
           </View>
           <View style={styles.SeatsViewStyle}>
             <Image
@@ -121,31 +92,37 @@ const ActivityComponent = () => {
               style={styles.GroupIconStyle}
               resizeMode={'contain'}
             />
-            <Text style={styles.totalseattext}>{item.TotalSeats}</Text>
+            <Text style={styles.totalseattext}>{item.total_seat}</Text>
           </View>
         </View>
       </TouchableOpacity>
     );
   };
   return (
-    <MainContainer>
+    // <MainContainer>
+    <View>
       <FlatList
-        style={styles.ActivityDataListViewStyle}
+        style={{ margin: 10 }}
         horizontal
-        bounces={false}
-        data={activitydata}
+        data={props.activityData}
         renderItem={renderActivity}
-        keyExtractor={item => item.ActivityIDP.toString()}
-        onEndReachedThreshold={1}
+        keyExtractor={(item, index) => item.id}
         onEndReached={() => {
-          console.log('End');
-          if (activitydata?.length > 0) {
-            // dispatch(GlobalAction.handleLoader(true, false, types.MENU_LIST));
-            debouncedOnEndReached();
+          if (!props.loading && props.hasMoreData) {
+            console.log("Fetching more data... Page:", props.currentPage);
+            props.fetchActivities(props.currentPage);
           }
         }}
+        onEndReachedThreshold={1}
+        ListFooterComponent={props.loading ? (  <View style={{ padding: 10, alignItems: "center" }}>
+          <ActivityIndicator size="large" color="blue" />
+        </View>) : null}
+        ListEmptyComponent={() => (
+          <Text style={{ textAlign: "center", marginTop: 20 }}>{props.apiMessage}</Text>
+        )}
       />
-    </MainContainer>
+      </View>
+    // </MainContainer>
   );
 };
 
