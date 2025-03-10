@@ -37,7 +37,7 @@ const ActivityComponent = (props) => {
         style={styles.ActivityCardViewStyle}
         onPress={() => OnPress(item)}>
         <ImageBackground
-          source={{uri:item?.images[0]}}
+          source={{uri:item?.images}}
           style={styles.ActivityImageStyle}
           imageStyle={{borderRadius: dW(30)}}>
           <LinearGradient

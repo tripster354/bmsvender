@@ -2,6 +2,7 @@ import {
   FlatList,
   Image,
   Keyboard,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -33,10 +34,7 @@ import {useFormik} from 'formik';
 import {AppHelper} from '../../constants';
 import {resizeUI} from '../../../Helper/Constants';
 import {useNavigation} from '@react-navigation/native';
-import {
-  DateTimePickerAndroid,
-  DatePickerOptions,
-} from '@react-native-community/datetimepicker';
+import RNDateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import {differenceInMinutes} from 'date-fns';
 import fonts from '../../assets/fonts';
 import MainContainer from '../../components/MainContainer';
@@ -57,8 +55,11 @@ const AddPostBooking = () => {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const [isLoading , setIsLoading] = useState(false);
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState();
   const [error, setError] = useState(null);
+  const [showPicker, setShowPicker] = useState(false);
+  const [pickerType, setPickerType] = useState(null);
+  const [tempDate, setTempDate] = useState(new Date());
   
   const ActivityData = useSelector(state => state.SessionReducer.activityData);
   useEffect(() => {
@@ -86,7 +87,6 @@ const AddPostBooking = () => {
       .catch(ex => {
         if (isLocationError(ex)) {
           const {code, message} = ex;
-          console.warn(code, message);
           setError(code);
         } else {
           console.warn(ex);
@@ -203,7 +203,7 @@ formdata.append("end_time", endtime);
 formdata.append("total_seat", values?.seat);
 formdata.append("price", `${values.price}`);
 formdata.append("url_link", "https://testbyrahil.com");
-formdata.append("images[]", file);
+formdata.append("images", file);
 
 
 const requestOptions = {
@@ -232,11 +232,13 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
   console.log('err', errors);
 
   const handleDateChange = (type, selectedDate) => {
+    console.log()
     if (selectedDate) {
       type === 'startDate'
         ? setFieldValue('startDate', selectedDate)
         : setFieldValue('endDate', selectedDate);
     }
+    setShowPicker(false);
   };
 
   const handleTimeChange = (type, selectedTime) => {
@@ -245,29 +247,42 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
         ? setFieldValue('startTime', selectedTime)
         : setFieldValue('endTime', selectedTime);
     }
+    setShowPicker(false);
   };
 
-  const openDatePicker = type => {
-    DateTimePickerAndroid.open({
-      value: type === 'startDate' ? values.startDate : values.endDate,
-      mode: 'date',
-      display: 'default',
-      minimumDate: new Date(), // restricts to future dates
-      onChange: (event, selectedDate) => {
-        if (selectedDate && selectedDate >= new Date()) {
-          handleDateChange(type, selectedDate);
-        }
-      },
-    });
+
+  const openDatePicker = (type) => {
+    if (Platform.OS === 'android') {
+      DateTimePickerAndroid.open({
+        value: type === 'startDate' ? values.startDate : values.endDate,
+        mode: 'date',
+        display: 'default',
+        minimumDate: new Date(),
+        onChange: (event, selectedDate) => {
+          if (selectedDate && selectedDate >= new Date()) {
+            handleDateChange(type, selectedDate);
+          }        },
+      });
+    } else {
+      setPickerType(type);
+      handleDateChange(type, new Date());
+      setShowPicker(true);
+    }
   };
 
-  const openTimePicker = type => {
-    DateTimePickerAndroid.open({
-      value: type === 'startTime' ? values.startTime : values.endTime,
-      mode: 'time',
-      display: 'default',
-      onChange: (event, selectedTime) => handleTimeChange(type, selectedTime),
-    });
+  const openTimePicker = (type) => {
+    if (Platform.OS === 'android') {
+      DateTimePickerAndroid.open({
+        value: type === 'startTime' ? values.startTime : values.endTime,
+        mode: 'time',
+        display: 'default',
+        onChange: (event, selectedTime) => handleTimeChange(type, selectedTime),
+      });
+    } else {
+      setPickerType(type);
+      handleDateChange(type, new Date());
+      setShowPicker(true);
+    }
   };
 
   useEffect(() => {
@@ -452,9 +467,7 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
               keyBoradTextType={'default'}
               placeholderTextColor={Colors.inActive}
               RigthIcon={CommonIcon.TargetIcon}
-              onFocus={() =>{
-                LocationGet()
-              }}
+              onFocus={LocationGet}
               // onFocus={() => {
               //   Keyboard.dismiss(),
               //     navigation.navigate('AddLocation', {
@@ -500,6 +513,22 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
               onPress={() => openTimePicker('endTime')}
             />
           </View>
+          {showPicker && Platform.OS === 'ios' && (
+        <RNDateTimePicker
+        style={{borderWidth:1,borderColor:'grey',borderRadius:10}}
+          value={tempDate}
+          mode={pickerType.includes('Date') ? 'date' : 'time'}
+          display="spinner"
+          minimumDate={pickerType.includes('Date') ? new Date() : undefined}
+          onChange={(event, selectedValue) => {
+            if (pickerType.includes('Date')) {
+              handleDateChange(pickerType, selectedValue);
+            } else {
+              handleTimeChange(pickerType, selectedValue);
+            }
+          }}
+        />
+      )}
 
           <View
             style={[
