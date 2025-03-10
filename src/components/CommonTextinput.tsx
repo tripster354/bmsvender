@@ -65,7 +65,7 @@ const CommonTextinput = (props: ICommonTextInput) => {
           <Image
             source={props.RigthIcon}
             resizeMode={'contain'}
-            style={styles.RigthIconStyle}
+            style={styles.RigthIconStyle}            
           />
         )}
       </View>

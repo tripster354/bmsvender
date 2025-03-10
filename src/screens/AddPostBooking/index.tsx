@@ -1,4 +1,5 @@
 import {
+  Alert,
   FlatList,
   Image,
   Keyboard,
@@ -68,8 +69,8 @@ const AddPostBooking = () => {
   }, []);
 
   const LocationGet = async() =>{
-    setLocation(null);
-    setError(null);
+    // setLocation(null);
+    // setError(null);
 
     GetLocation.getCurrentPosition({
       enableHighAccuracy: true,
@@ -87,6 +88,7 @@ const AddPostBooking = () => {
       .catch(ex => {
         if (isLocationError(ex)) {
           const {code, message} = ex;
+          Alert.alert('please Turn On Location')
           setError(code);
         } else {
           console.warn(ex);
@@ -167,6 +169,7 @@ const AddPostBooking = () => {
     const ET = new Date(values.endTime);
 
     const formatDate = dateString => {
+      console.log('date======>',moment(dateString, 'MM/DD/YYYY').format('YYYY-MM-DD'));
       return moment(dateString, 'MM/DD/YYYY').format('YYYY-MM-DD');
     };
 
@@ -185,7 +188,7 @@ const AddPostBooking = () => {
 
 
 
-    console.log('${formatDate(values?.startDate?.toLocaleDateString())}',formatDate(values?.startDate?.toLocaleDateString()))
+    console.log('${formatDate(values?.startDate?.toLocaleDateString())}',values?.startDate?.toLocaleDateString())
     const myHeaders = new Headers();
 myHeaders.append("Authorization", `Bearer ${await getAsyncStorage("Token")}`);
 
@@ -205,7 +208,7 @@ formdata.append("price", `${values.price}`);
 formdata.append("url_link", "https://testbyrahil.com");
 formdata.append("images", file);
 
-
+console.log('fotmdata',formdata)
 const requestOptions = {
   method: "POST",
   headers: myHeaders,
@@ -218,10 +221,9 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
   .then((response) => response.json())
   .then((result) => {
     setIsLoading(false)
-    let temp = result
     if(result.status == 201){
-      console.log('message==>',temp)
-      showToast(temp.message)
+      console.log('message==>',result)
+      showToast(result.message)
       resetForm();
       navigation.navigate('FeedStack');
     }
@@ -232,7 +234,7 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
   console.log('err', errors);
 
   const handleDateChange = (type, selectedDate) => {
-    console.log()
+    console.log('selectDate===>',selectedDate)
     if (selectedDate) {
       type === 'startDate'
         ? setFieldValue('startDate', selectedDate)
@@ -242,6 +244,7 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
   };
 
   const handleTimeChange = (type, selectedTime) => {
+    console.log('selecteTime===>',type,selectedTime)
     if (selectedTime) {
       type === 'startTime'
         ? setFieldValue('startTime', selectedTime)
@@ -252,6 +255,7 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
 
 
   const openDatePicker = (type) => {
+    console.log('type=====>>>>>',values)
     if (Platform.OS === 'android') {
       DateTimePickerAndroid.open({
         value: type === 'startDate' ? values.startDate : values.endDate,
@@ -259,6 +263,7 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
         display: 'default',
         minimumDate: new Date(),
         onChange: (event, selectedDate) => {
+          console.log('seleDate====>>',selectedDate)
           if (selectedDate && selectedDate >= new Date()) {
             handleDateChange(type, selectedDate);
           }        },
@@ -289,6 +294,7 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
     const calculateTotalHours = () => {
       const start = values.startTime;
       const end = values.endTime;
+      console.log('startdata , end Dat==',start ,end)
 
       const diffInMinutes = differenceInMinutes(end, start);
 
@@ -467,13 +473,14 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
               keyBoradTextType={'default'}
               placeholderTextColor={Colors.inActive}
               RigthIcon={CommonIcon.TargetIcon}
-              onFocus={LocationGet}
-              // onFocus={() => {
-              //   Keyboard.dismiss(),
-              //     navigation.navigate('AddLocation', {
-              //       name: 'Booking',
-              //     });
-              // }}
+              // onFocus={() =>LocationGet}
+              onFocus={() => {
+                // Keyboard.dismiss(),
+                LocationGet()
+                  // navigation.navigate('AddLocation', {
+                  //   name: 'Booking',
+                  // });
+              }}
               touched={touched.venue}
               error={errors.venue}
             />
