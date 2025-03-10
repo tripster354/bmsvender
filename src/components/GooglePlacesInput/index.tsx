@@ -3,8 +3,8 @@ import {Text, View, StyleSheet} from 'react-native';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import {resizeUI} from '../../../Helper/Constants';
 import {useDispatch} from 'react-redux';
-import {SelectedLocationDataGetAction} from '../../Redux/actions/CreateAction';
 import Colors from '../../utils/theme/colors';
+import { getLoacationData } from '../../store/actions/SessionActions';
 
 const GOOGLE_PLACES_API_KEY = 'AIzaSyAiBhJGYZIQjl3BWi8kpfJK2ntRHNHP9xI';
 
@@ -15,14 +15,17 @@ type Props = {
 
 const GooglePlacesInput = (props: Props) => {
   const {navigation, name} = props;
+  console.log('name',name)
   const dispatch = useDispatch();
   const [listViewDisplayed, setListViewDisplayed] = useState(false);
   const searchText = useRef(null);
 
-  const goToInitialLocation = initialRegion => {
+  const goToInitialLocation =  initialRegion => {
     // Additional navigation logic here
-    navigation.navigate(name);
-    dispatch(SelectedLocationDataGetAction(initialRegion));
+    dispatch(getLoacationData(initialRegion));
+    navigation.navigate(name,{
+      initialRegion: initialRegion,
+    });
   };
 
   useEffect(() => {

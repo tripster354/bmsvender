@@ -1,4 +1,4 @@
-import { ACTIVITYINTEREST, GETALLACTIVITY, IS_LOADING, REGISTER_USER } from "./Types"
+import { ACTIVITYINTEREST, GETALLACTIVITY, IS_LOADING, LOACTIONDATA, REGISTER_USER } from "./Types"
 
 
 export const register_user = (data) =>{
@@ -39,6 +39,13 @@ export const getActivityData = (data)=>{
   return{
     type: GETALLACTIVITY,
     payload: data
+  }
+}
+
+export const getLoacationData = (data)=>{
+  return{
+    type: LOACTIONDATA,
+    playload: data
   }
 }
 

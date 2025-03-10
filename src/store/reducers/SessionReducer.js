@@ -1,4 +1,4 @@
-import { ACTIVITYINTEREST, GETALLACTIVITY, IS_LOADING, REGISTER_USER } from "../actions/Types";
+import { ACTIVITYINTEREST, GETALLACTIVITY, IS_LOADING, LOACTIONDATA, REGISTER_USER } from "../actions/Types";
 
 
 const intialState = {
@@ -9,6 +9,7 @@ const intialState = {
     isFetching: false,
     activityData: [],
     getActivityData: [],
+    getLoacation: [],
 }
 
 
@@ -37,6 +38,12 @@ export default (state = intialState, action) => {
                 ...state,
                 getActivityData: action.payload
             }
+        }
+        case LOACTIONDATA:{
+            return{
+                ...state,
+                getLoacation: action.payload
+            }   
         }
         default:
             return state;

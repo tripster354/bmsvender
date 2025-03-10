@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import styles from './styles';
 import CommonHeader from '../../components/CommonHeader';
 import {CommonIcon} from '../../assets/images/CommonIcon';
@@ -29,7 +29,7 @@ import * as Yup from 'yup';
 import {useFormik} from 'formik';
 import {AppHelper} from '../../constants';
 import {resizeUI} from '../../../Helper/Constants';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation, useRoute} from '@react-navigation/native';
 import RNDateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import {differenceInMinutes} from 'date-fns';
 import fonts from '../../assets/fonts';
@@ -50,18 +50,34 @@ import GetLocation, {
 const AddPostBooking = () => {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
+  const route = useRoute()
   const [isLoading , setIsLoading] = useState(false);
   const [location, setLocation] = useState();
   const [error, setError] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
   const [pickerType, setPickerType] = useState(null);
   const [tempDate, setTempDate] = useState(new Date());
+  const locationData = route?.params
   
   const ActivityData = useSelector(state => state.SessionReducer.activityData);
+  // const getLoacation = useSelector(state => state.SessionReducer.getLoacation)
   useEffect(() => {
     ActivityApiCall()
-    LocationGet()
+    // LocationGet()
   }, []);
+  useFocusEffect(
+  useCallback(() => {
+    console.log('locationData ===>', locationData?.initialRegion);
+
+    if (locationData?.initialRegion?.locationname) {
+      handleChange('venue')(locationData.initialRegion.locationname);
+    }
+  }, [locationData?.initialRegion?.locationname])
+);
+  // useEffect(()=>{
+  //   console.log('getLoacation',getLoacation)
+  //   setLocation(getLoacation?.locationdata)
+  // },[])
 
   const LocationGet = async() =>{
     // setLocation(null);
@@ -191,8 +207,8 @@ formdata.append("category_id",`${values.interest.id}`);
 formdata.append("name", `${values.activityname}`);
 formdata.append("description", `${values.activity}`);
 formdata.append("location_name", `${values.venue}`);
-formdata.append("latitude", location?.latitude);
-formdata.append("longitude", location?.longitude);
+formdata.append("latitude", locationData?.initialRegion?.latitude);
+formdata.append("longitude", locationData?.initialRegion?.longitude);
 formdata.append("start_date", `${moment(values?.startDate, 'MM/DD/YYYY').format('YYYY-MM-DD')}`);
 formdata.append("end_date", `${moment(values?.endDate, 'MM/DD/YYYY').format('YYYY-MM-DD')}`);
 formdata.append("start_time", starttime);
@@ -472,10 +488,10 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
               // onFocus={() =>LocationGet}
               onFocus={() => {
                 // Keyboard.dismiss(),
-                LocationGet()
-                  // navigation.navigate('AddLocation', {
-                  //   name: 'Booking',
-                  // });
+                // LocationGet()
+                  navigation.navigate('AddLocation', {
+                    name: 'Booking',
+                  });
               }}
               touched={touched.venue}
               error={errors.venue}
