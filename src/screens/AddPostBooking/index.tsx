@@ -25,11 +25,6 @@ import CommonShortInput from '../../components/CommonShortInput';
 import {OfferData} from './MockData';
 import GradientButton from '../../constants/GradiantButton';
 import {useAppDispatch, useAppSelector} from '../../Redux/reducers/hook';
-// import {
-//   ActivityInterestAction,
-//   CreateActivityAction,
-//   SelectedLocationDataGetClearAction,
-// } from '../../Redux/actions/CreateAction';
 import * as Yup from 'yup';
 import {useFormik} from 'formik';
 import {AppHelper} from '../../constants';
@@ -169,7 +164,6 @@ const AddPostBooking = () => {
     const ET = new Date(values.endTime);
 
     const formatDate = dateString => {
-      console.log('date======>',moment(dateString, 'MM/DD/YYYY').format('YYYY-MM-DD'));
       return moment(dateString, 'MM/DD/YYYY').format('YYYY-MM-DD');
     };
 
@@ -193,14 +187,14 @@ const AddPostBooking = () => {
 myHeaders.append("Authorization", `Bearer ${await getAsyncStorage("Token")}`);
 
 const formdata = new FormData();
-formdata.append("category_id", "1");
+formdata.append("category_id",`${values.interest.id}`);
 formdata.append("name", `${values.activityname}`);
 formdata.append("description", `${values.activity}`);
 formdata.append("location_name", `${values.venue}`);
 formdata.append("latitude", location?.latitude);
 formdata.append("longitude", location?.longitude);
-formdata.append("start_date", `${formatDate(values?.startDate?.toLocaleDateString())}`);
-formdata.append("end_date", `${formatDate(values?.endDate?.toLocaleDateString())}`);
+formdata.append("start_date", `${moment(values?.startDate, 'MM/DD/YYYY').format('YYYY-MM-DD')}`);
+formdata.append("end_date", `${moment(values?.endDate, 'MM/DD/YYYY').format('YYYY-MM-DD')}`);
 formdata.append("start_time", starttime);
 formdata.append("end_time", endtime);
 formdata.append("total_seat", values?.seat);
@@ -209,13 +203,13 @@ formdata.append("url_link", "https://testbyrahil.com");
 formdata.append("images", file);
 
 console.log('fotmdata',formdata)
+// return
 const requestOptions = {
   method: "POST",
   headers: myHeaders,
   body: formdata,
   redirect: "follow"
 };
-
 setIsLoading(true)
 fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activity", requestOptions)
   .then((response) => response.json())
@@ -380,7 +374,9 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
               data={ActivityData}
               select={values.interest}
               onSelect={selectedValue =>
-                setFieldValue('interest', selectedValue)
+              {
+                console.log('selectedValue',selectedValue.id);
+                setFieldValue('interest', selectedValue)}
               }
               keyField="id" // Custom key for ID
               valueField="name" // Custom key for Title
@@ -636,13 +632,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
           ) : (
             <></>
           )}
-
-          {/* <Text style={styles.OfferTextStyle}>Offers</Text>
-        <FlatList
-          data={OfferData}
-          renderItem={Offerrender}
-          keyExtractor={item => item.id.toString()}
-        /> */}
           <View style={styles.ContinueViewStyle}>
             <GradientButton
               text={'Publish'}
