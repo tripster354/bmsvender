@@ -67,7 +67,6 @@ const AddPostBooking = () => {
   }, []);
   useFocusEffect(
   useCallback(() => {
-    console.log('locationData ===>', locationData?.initialRegion);
 
     if (locationData?.initialRegion?.locationname) {
       handleChange('venue')(locationData.initialRegion.locationname);
