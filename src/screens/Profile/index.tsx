@@ -12,7 +12,7 @@ const Profile = () => {
   return (
     <View style={styles.container}>
       <CommonHeader
-        leftIcon={CommonIcon.BurgerMenu}
+        leftIcon={null}
         title={'Profile Setting'}
         RigthIcon={''}
         SubTitle={''}

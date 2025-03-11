@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
     WorkshopTitleTextStyle:{
         color:Colors.white,
         fontFamily:fonts.NexaBlack,
-        fontSize:dW(47)
+        fontSize:dW(47),
+        textAlign:'center'
     },
     LocationViewStyle:{
         marginTop:dH(31),

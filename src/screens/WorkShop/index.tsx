@@ -84,7 +84,7 @@ const renderProgress = ({item,index}) =>{
       <View style={styles.HeaderViewStyle}>
         <CommonHeader
           leftIcon={null}
-          title={'Guitar Workshop'}
+          title={RouteData.name}
           RigthIcon={CommonIcon.NotificationIcon}
           SubTitle={''}
           rigthType={'path'}
@@ -94,7 +94,7 @@ const renderProgress = ({item,index}) =>{
       <ScrollView style={{flex: 1}}>
         <View style={styles.WorkshopDetailViewStyle}>
           <ImageBackground
-            source={RouteData.image}
+            source={{uri:RouteData.images}}
             style={styles.WorkshopImageStyle}
             imageStyle={{borderRadius: dW(25)}}>
             <View style={styles.ImageViewContainerStyle}>
@@ -108,7 +108,7 @@ const renderProgress = ({item,index}) =>{
           </ImageBackground>
           <View style={styles.DetailViewStyle}>
             <View>
-              <Text style={styles.WorkshopTitleTextStyle}>Guitar Workshop</Text>
+              <Text style={styles.WorkshopTitleTextStyle}>{RouteData.name}</Text>
               <View style={styles.LocationViewStyle}>
                 <Image
                   source={images.profile.LocationMark}
@@ -117,12 +117,12 @@ const renderProgress = ({item,index}) =>{
                   tintColor={Colors.white}
                 />
                 <Text style={styles.locationTextStyle}>
-                  {RouteData.location}
+                  {RouteData.location_name}
                 </Text>
               </View>
             </View>
             <View style={styles.PriceViewStyle}>
-              <Text style={styles.PriceTextStyle}>$ 230 </Text>
+              <Text style={styles.PriceTextStyle}>$ {RouteData.price} </Text>
               <Text style={styles.SessionTextStyle}>Per Session</Text>
             </View>
             <View style={styles.StarViewStyle}>

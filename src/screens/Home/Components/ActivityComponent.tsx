@@ -27,9 +27,9 @@ const ActivityComponent = (props) => {
 
 
   const OnPress = (item: any) => {
-    // navigation.navigate('WorkShop', {
-    //   data: item,
-    // });
+    navigation.navigate('WorkShop', {
+      data: item,
+    });
   };
   const renderActivity = ({item, index}: any) => {
     return (
