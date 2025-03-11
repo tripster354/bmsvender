@@ -244,7 +244,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
   console.log('err', errors);
 
   const handleDateChange = (type, selectedDate) => {
-    console.log('selectDate===>',selectedDate)
     if (selectedDate) {
       type === 'startDate'
         ? setFieldValue('startDate', selectedDate)
@@ -254,7 +253,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
   };
 
   const handleTimeChange = (type, selectedTime) => {
-    console.log('selecteTime===>',type,selectedTime)
     if (selectedTime) {
       type === 'startTime'
         ? setFieldValue('startTime', selectedTime)
@@ -265,7 +263,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
 
 
   const openDatePicker = (type) => {
-    console.log('type=====>>>>>',values)
     if (Platform.OS === 'android') {
       DateTimePickerAndroid.open({
         value: type === 'startDate' ? values.startDate : values.endDate,
@@ -273,7 +270,6 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
         display: 'default',
         minimumDate: new Date(),
         onChange: (event, selectedDate) => {
-          console.log('seleDate====>>',selectedDate)
           if (selectedDate && selectedDate >= new Date()) {
             handleDateChange(type, selectedDate);
           }        },
@@ -469,8 +465,9 @@ fetch("https://honeydew-magpie-887435.hostingersite.com/api/vender/create-activi
           ) : (
             <></>
           )}
-          {values?.cover?.data?.path &&
-            renderGalleryItem(values?.cover?.data?.path)}
+          {(values?.cover?.data?.path || values?.cover?.path) &&
+            renderGalleryItem(values?.cover?.data?.path || values?.cover?.path)
+            }
           <View
             style={[
               styles.CommonTextinputStyle,
