@@ -205,8 +205,8 @@ const cameraPermissionGranted = (type: string) => {
     compressImageQuality: 0.6, // Set compression quality to maximum
   };
   let PostOption = {
-    width: 700,
-    height: 800,
+    width: 1000,
+    height:1000,
     compressImageQuality: 0.7,
     cropping: true,
     hideBottomControls: true,

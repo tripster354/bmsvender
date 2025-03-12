@@ -99,7 +99,6 @@ const Home: FC<HomeProps> = ({ navigation }) => {
       );
 
       const result = await response.json();
-      console.log('result',result)
       setLoading(false);
       if (result?.status === 200) {
         if (result?.data?.result?.length > 0) {

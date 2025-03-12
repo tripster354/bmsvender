@@ -40,18 +40,18 @@ const TopTabNavigator: React.FC<TopTabNavigatorProps> = ({
         // tabBarPressColor: Colors.black,
         lazy: true,
         swipeEnabled: true,
-      }}
-      tabBarOptions={{
-        tabStyle: {
-          // Customize tab style
-          padding: 0, // Set padding to 0 or adjust as needed
-          margin: 0, // Set margin to 0 or adjust to reduce space between tabs
-          // width: isTabScrollable ? undefined : tabWidth,
-        },
-        style: {
-          // Overall tab bar style adjustments
-          paddingHorizontal: 10, // Optional: reduce horizontal padding around the tab bar itself
-        },
+      // }}
+      // tabBarOptions={{
+      //   tabStyle: {
+      //     // Customize tab style
+      //     padding: 0, // Set padding to 0 or adjust as needed
+      //     margin: 0, // Set margin to 0 or adjust to reduce space between tabs
+      //     // width: isTabScrollable ? undefined : tabWidth,
+      //   },
+      //   style: {
+      //     // Overall tab bar style adjustments
+      //     paddingHorizontal: 10, // Optional: reduce horizontal padding around the tab bar itself
+      //   },
       }}>
         <Tab.Screen
           name={'Personal Details'}
