@@ -101,6 +101,8 @@ const Home: FC<HomeProps> = ({ navigation }) => {
       const result = await response.json();
       setLoading(false);
       if (result?.status === 200) {
+        console.log('resul====>',result)
+        setApiMessage(result?.message || "No data available.");
         if (result?.data?.result?.length > 0) {
           setActivityData((prevData) => [...prevData, ...result.data.result]);
           setCurrentPage((prevPage) => prevPage + 1);

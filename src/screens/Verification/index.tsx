@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 import React, { useState } from 'react';
 import styles from './style';
 import CommonHeader from '../../components/CommonHeader';
@@ -50,6 +50,9 @@ const Verification = () => {
               })
             }
           }
+        }).catch((error) =>{
+          setIsLoading(false)
+          Alert.alert(error)
         })
 
     }
@@ -62,7 +65,7 @@ const Verification = () => {
       })
       APICall('post', body, endPoint.loginverify, false)
         .then(async (res) => {
-          dispatch(handleLoader(false));
+          setIsLoading(false)
           if (res && typeof res === 'object' && 'data' in res) {
             showToast((res as any).data.message);
             console.log('res', res.data)
